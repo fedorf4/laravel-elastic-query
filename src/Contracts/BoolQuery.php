@@ -9,7 +9,11 @@ interface BoolQuery
 {
     public function where(string $field, mixed $operator, mixed $value = null): static;
 
+    public function orWhere(string $field, mixed $operator, mixed $value = null): static;
+
     public function whereNot(string $field, mixed $value): static;
+
+    public function orWhereNot(string $field, mixed $value): static;
 
     public function whereIn(string $field, array|Arrayable $values): static;
 
