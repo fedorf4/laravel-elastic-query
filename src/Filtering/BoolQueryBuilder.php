@@ -93,19 +93,43 @@ class BoolQueryBuilder implements BoolQuery, Criteria
             return $this->whereNot($field, $value);
         }
 
+        $this->filter->add($this->makeWhere(...func_get_args()));
+
+        return $this;
+    }
+
+    public function orWhere(string $field, mixed $operator, mixed $value = null): static
+    {
+        if ($operator === '!=') {
+            return $this->orWhereNot($field, $value);
+        }
+
+        $this->should->add($this->makeWhere(...func_get_args()));
+
+        return $this;
+    }
+
+    protected function makeWhere(string $field, mixed $operator, mixed $value = null): Criteria
+    {
         if (func_num_args() === 2) {
             [$operator, $value] = ['=', $operator];
         }
 
-        $criteria = $this->createComparisonCriteria($this->absolutePath($field), $operator, $value);
-        $this->filter->add($criteria);
-
-        return $this;
+        return $operator === '='
+            ? new Term($this->absolutePath($field), $value)
+            : new RangeBound($this->absolutePath($field), $operator, $value);
     }
 
     public function whereNot(string $field, mixed $value): static
     {
         $this->mustNot->add(new Term($this->absolutePath($field), $value));
+
+        return $this;
+    }
+
+    public function orWhereNot(string $field, mixed $value): static
+    {
+        $this->should->add(new Term($this->absolutePath($field), $value));
 
         return $this;
     }
@@ -238,13 +262,6 @@ class BoolQueryBuilder implements BoolQuery, Criteria
         }
 
         return $this;
-    }
-
-    protected function createComparisonCriteria(string $field, string $operator, mixed $value): Criteria
-    {
-        return $operator === '=' || $operator === '!='
-            ? new Term($field, $value)
-            : new RangeBound($field, $operator, $value);
     }
 
     protected function basePath(): string
