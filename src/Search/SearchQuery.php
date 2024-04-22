@@ -17,6 +17,7 @@ use Ensi\LaravelElasticQuery\Scripts\Script;
 use Ensi\LaravelElasticQuery\Search\Collapsing\Collapse;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
+use GuzzleHttp\Ring\Future\FutureArray;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -54,17 +55,31 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
         return $this->parseHits($response);
     }
 
-    public function paginate(int $size, int $offset = 0): Page
+    public function paginate(int $size, int $offset = 0, ?callable $async = null): Page|FutureArray
     {
         Assert::greaterThan($size, 0);
         Assert::greaterThanEq($offset, 0);
 
-        $response = $this->execute(size: $size, from: $offset, totals: true);
-        $hits = $this->parseHits($response);
+        if ($async) {
+            /** @var FutureArray $promise */
+            $promise = $this->execute(size: $size, from: $offset, totals: true, async: true);
 
+            $promise->then(function (array $response) use ($size, $offset, $async) {
+                $async($this->responseToPage($size, $offset, $response));
+            });
+
+            return $promise;
+        } else {
+            $response = $this->execute(size: $size, from: $offset, totals: true, async: false);
+            return $this->responseToPage($size, $offset, $response);
+        }
+    }
+
+    protected function responseToPage(int $size, int $offset, array $response): Page
+    {
         return new Page(
             $size,
-            $hits,
+            $this->parseHits($response),
             aggs: $this->aggregations?->parseResults($response['aggregations'] ?? []),
             offset: $offset,
             total: data_get($response, 'hits.total.value', 0)
@@ -122,8 +137,9 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
         ?int $from = null,
         bool $totals = false,
         bool $source = true,
-        ?Cursor $cursor = null
-    ): array {
+        ?Cursor $cursor = null,
+        bool $async = false,
+    ): array|FutureArray {
         $dsl = [
             'size' => $size,
             'from' => $from,
@@ -150,7 +166,9 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
             $dsl['search_after'] = $cursor->toDSL();
         }
 
-        return $this->index->search(array_filter($dsl));
+        $dsl = array_filter($dsl);
+
+        return $async ? $this->index->searchAsync($dsl) : $this->index->search($dsl);
     }
 
     protected function sourceToDSL(bool $source): array | bool

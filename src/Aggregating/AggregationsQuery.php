@@ -7,6 +7,7 @@ use Ensi\LaravelElasticQuery\Concerns\ConstructsAggregations;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Contracts\SearchIndex;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
+use GuzzleHttp\Ring\Future\FutureArray;
 use Illuminate\Support\Collection;
 
 class AggregationsQuery implements AggregationsBuilder
@@ -29,18 +30,30 @@ class AggregationsQuery implements AggregationsBuilder
         return $this;
     }
 
-    public function get(): Collection
+    public function get(?callable $async = null): Collection|FutureArray
     {
         if ($this->aggregations->isEmpty()) {
             return new Collection();
         }
 
-        $response = $this->execute();
+        if ($async) {
+            /** @var FutureArray $promise */
+            $promise = $this->execute(async: true);
+
+            $promise->then(function (array $response) use ($async) {
+                $async($this->responseToResults($response));
+            });
+
+            return $promise;
+        } else {
+            $response = $this->execute(async: false);
+            return $this->responseToResults($response);
+        }
 
         return $this->aggregations->parseResults($response['aggregations'] ?? []);
     }
 
-    protected function execute(): array
+    protected function execute(bool $async = false): array|FutureArray
     {
         $dsl = [
             'size' => 0,
@@ -49,6 +62,11 @@ class AggregationsQuery implements AggregationsBuilder
             'aggs' => $this->aggregations->toDSL(),
         ];
 
-        return $this->index->search($dsl);
+        return $async ? $this->index->searchAsync($dsl) : $this->index->search($dsl);
+    }
+
+    protected function responseToResults($response): Collection
+    {
+        return $this->aggregations->parseResults($response['aggregations'] ?? []);
     }
 }
