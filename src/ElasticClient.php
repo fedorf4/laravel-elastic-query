@@ -148,7 +148,7 @@ class ElasticClient
     protected function paramsAsync(array $params): array
     {
         return array_merge_recursive($params, [
-            'client' => ['future' => 'lazy']
+            'client' => ['future' => 'lazy'],
         ]);
     }
 }

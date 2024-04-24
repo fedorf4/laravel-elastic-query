@@ -71,6 +71,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
             return $promise;
         } else {
             $response = $this->execute(size: $size, from: $offset, totals: true, async: false);
+
             return $this->responseToPage($size, $offset, $response);
         }
     }

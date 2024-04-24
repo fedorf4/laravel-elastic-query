@@ -47,6 +47,7 @@ class AggregationsQuery implements AggregationsBuilder
             return $promise;
         } else {
             $response = $this->execute(async: false);
+
             return $this->responseToResults($response);
         }
 
