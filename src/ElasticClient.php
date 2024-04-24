@@ -6,6 +6,7 @@ use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Ensi\LaravelElasticQuery\Debug\QueryLog;
 use Ensi\LaravelElasticQuery\Debug\QueryLogRecord;
+use GuzzleHttp\Ring\Future\FutureArray;
 use Illuminate\Support\Collection;
 
 class ElasticClient
@@ -24,6 +25,16 @@ class ElasticClient
             'index' => $indexName,
             'body' => $dsl,
         ]);
+    }
+
+    public function searchAsync(string $indexName, array $dsl): FutureArray
+    {
+        $this->queryLog?->log($indexName, $dsl);
+
+        return $this->client->search($this->paramsAsync([
+            'index' => $indexName,
+            'body' => $dsl,
+        ]));
     }
 
     public function deleteByQuery(string $indexName, array $dsl): array
@@ -132,5 +143,12 @@ class ElasticClient
         }
 
         return new static($builder->build());
+    }
+
+    protected function paramsAsync(array $params): array
+    {
+        return array_merge_recursive($params, [
+            'client' => ['future' => 'lazy'],
+        ]);
     }
 }

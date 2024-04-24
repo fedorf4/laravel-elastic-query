@@ -8,6 +8,7 @@ use Ensi\LaravelElasticQuery\ElasticClient;
 use Ensi\LaravelElasticQuery\Search\SearchQuery;
 use Ensi\LaravelElasticQuery\Suggesting\SuggestQuery;
 use Exception;
+use GuzzleHttp\Ring\Future\FutureArray;
 
 trait InteractsWithIndex
 {
@@ -31,6 +32,14 @@ trait InteractsWithIndex
     public function search(array $dsl): array
     {
         return $this->resolveClient()->search($this->indexName(), $dsl);
+    }
+
+    /**
+     * @see SearchIndex::search()
+     */
+    public function searchAsync(array $dsl): FutureArray
+    {
+        return $this->resolveClient()->searchAsync($this->indexName(), $dsl);
     }
 
     /**
