@@ -102,6 +102,32 @@ class ElasticClient
         return $results;
     }
 
+    public function indicesInfo(
+        ?array $indices = [],
+        array $columns = ['i'],
+        array $sort = [],
+        ?string $health = null
+    ): array {
+        $params = ['format' => 'json', 'h' => 'i'];
+        if ($indices) {
+            $params['index'] = implode(',', $indices);
+        }
+        if ($health) {
+            $params['h'] = $health;
+        }
+        if ($columns) {
+            $params['h'] = implode(',', $columns);
+        }
+        if ($sort) {
+            $params['s'] = implode(',', $sort);
+        }
+
+        return $this->client
+            ->cat()
+            ->indices($params)
+            ->asArray();
+    }
+
     public function indicesDelete(string $indexName): array
     {
         return $this->client

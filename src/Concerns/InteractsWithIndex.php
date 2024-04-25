@@ -71,6 +71,16 @@ trait InteractsWithIndex
         return $this->resolveClient()->catIndices($indexName, $getFields);
     }
 
+    public function indicesInfo(array $columns = ['i'], array $sort = [], ?string $health = null): array
+    {
+        return $this->resolveClient()->indicesInfo(
+            indices: [$this->indexName()],
+            columns: $columns,
+            sort: $sort,
+            health: $health
+        );
+    }
+
     public function indicesDelete(string $index): array
     {
         return $this->resolveClient()->indicesDelete($index);
