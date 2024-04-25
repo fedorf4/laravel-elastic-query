@@ -123,9 +123,9 @@ class ElasticClient
         }
 
         return $this->client
-                ->cat()
-                ->indices($params)
-                ->asArray();
+            ->cat()
+            ->indices($params)
+            ->asArray();
     }
 
     public function indicesDelete(string $indexName): array
