@@ -17,6 +17,11 @@ class ElasticClient
     {
     }
 
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
     public function search(string $indexName, array $dsl): array
     {
         $this->queryLog?->log($indexName, $dsl);
