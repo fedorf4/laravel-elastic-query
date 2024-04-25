@@ -72,10 +72,10 @@ trait InteractsWithIndex
     }
 
     public function indicesInfo(
-            ?array $indices = [],
-            array $columns = ['i'],
-            array $sort = [],
-            ?string $health = null
+        ?array $indices = [],
+        array $columns = ['i'],
+        array $sort = [],
+        ?string $health = null
     ): array {
         return $this->resolveClient()->indicesInfo($indices, $columns, $sort, $health);
     }
