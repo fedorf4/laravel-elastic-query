@@ -35,6 +35,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
     protected array $fields = [];
     protected array $include = [];
     protected array $exclude = [];
+    protected ?string $searchType = null;
 
     public function __construct(protected SearchIndex $index)
     {
@@ -150,7 +151,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
             $dsl['search_after'] = $cursor->toDSL();
         }
 
-        return $this->index->search(array_filter($dsl));
+        return $this->index->search(array_filter($dsl), $this->searchType);
     }
 
     protected function sourceToDSL(bool $source): array | bool
@@ -241,6 +242,15 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
         Assert::greaterThanEq($count, 0);
 
         $this->from = $count;
+
+        return $this;
+    }
+
+    public function searchType(string $searchType): static
+    {
+        Assert::stringNotEmpty($searchType);
+
+        $this->searchType = $searchType;
 
         return $this;
     }
