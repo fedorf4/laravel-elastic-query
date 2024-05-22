@@ -20,6 +20,8 @@ trait InteractsWithIndex
 
     abstract protected function indexName(): string;
 
+    abstract protected function searchType(): ?string;
+
     protected function settings(): array
     {
         throw new Exception("Need to redefine the method");
@@ -30,7 +32,7 @@ trait InteractsWithIndex
      */
     public function search(array $dsl): array
     {
-        return $this->resolveClient()->search($this->indexName(), $dsl);
+        return $this->resolveClient()->search($this->indexName(), $dsl, $this->searchType());
     }
 
     /**

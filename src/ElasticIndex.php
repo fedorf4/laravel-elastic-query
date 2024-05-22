@@ -26,4 +26,9 @@ abstract class ElasticIndex implements SearchIndex
     {
         return $this->name;
     }
+
+    protected function searchType(): ?string
+    {
+        return null;
+    }
 }
