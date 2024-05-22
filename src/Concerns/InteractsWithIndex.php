@@ -33,7 +33,7 @@ trait InteractsWithIndex
      */
     public function search(array $dsl): array
     {
-        return $this->resolveClient()->search($this->indexName(), $dsl);
+        return $this->resolveClient()->search($this->indexName(), $dsl, $this->searchType());
     }
 
     /**
