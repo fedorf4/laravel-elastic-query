@@ -15,9 +15,10 @@ interface SearchIndex
      * Perform search query.
      *
      * @param array $dsl
+     * @param string|null $searchType
      * @return array
      */
-    public function search(array $dsl): array;
+    public function search(array $dsl, ?string $searchType = null): array;
 
     /**
      * Perform delete by query.

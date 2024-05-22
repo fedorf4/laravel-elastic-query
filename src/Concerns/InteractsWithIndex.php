@@ -29,17 +29,17 @@ trait InteractsWithIndex
     /**
      * @see SearchIndex::search()
      */
-    public function search(array $dsl): array
+    public function search(array $dsl, ?string $searchType = null): array
     {
-        return $this->resolveClient()->search($this->indexName(), $dsl);
+        return $this->resolveClient()->search($this->indexName(), $dsl, $searchType);
     }
 
     /**
      * @see SearchIndex::search()
      */
-    public function searchAsync(array $dsl): FutureArray
+    public function searchAsync(array $dsl, ?string $searchType = null): FutureArray
     {
-        return $this->resolveClient()->searchAsync($this->indexName(), $dsl);
+        return $this->resolveClient()->searchAsync($this->indexName(), $dsl, $searchType);
     }
 
     /**
