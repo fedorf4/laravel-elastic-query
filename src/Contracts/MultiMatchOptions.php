@@ -14,7 +14,8 @@ class MultiMatchOptions
         ?string $type = null,
         ?string $operator = null,
         ?string $fuzziness = null,
-        ?string $minimumShouldMatch = null
+        ?string $minimumShouldMatch = null,
+        ?float $boost = null
     ): static {
         Assert::nullOrOneOf($type, MatchType::cases());
         Assert::nullOrOneOf($operator, ['or', 'and']);
@@ -24,6 +25,7 @@ class MultiMatchOptions
             'operator' => $operator,
             'fuzziness' => $fuzziness,
             'minimum_should_match' => $minimumShouldMatch,
+            'boost' => $boost,
         ]));
     }
 

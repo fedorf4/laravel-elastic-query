@@ -21,6 +21,8 @@ trait InteractsWithIndex
 
     abstract protected function indexName(): string;
 
+    abstract protected function searchType(): ?string;
+
     protected function settings(): array
     {
         throw new Exception("Need to redefine the method");
