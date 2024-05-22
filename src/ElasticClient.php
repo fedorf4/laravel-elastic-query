@@ -36,14 +36,17 @@ class ElasticClient
             );
     }
 
-    public function searchAsync(string $indexName, array $dsl): FutureArray
+    public function searchAsync(string $indexName, array $dsl, ?string $searchType = null): FutureArray
     {
         $this->queryLog?->log($indexName, $dsl);
 
-        return $this->client->search($this->paramsAsync([
-            'index' => $indexName,
-            'body' => $dsl,
-        ]));
+        return $this->client->search($this->paramsAsync(
+            array_filter([
+                'index' => $indexName,
+                'body' => $dsl,
+                'search_type' => $searchType,
+            ]),
+        ));
     }
 
     public function deleteByQuery(string $indexName, array $dsl): array
