@@ -28,9 +28,9 @@ trait InteractsWithIndex
     /**
      * @see SearchIndex::search()
      */
-    public function search(array $dsl): array
+    public function search(array $dsl, ?string $searchType = null): array
     {
-        return $this->resolveClient()->search($this->indexName(), $dsl);
+        return $this->resolveClient()->search($this->indexName(), $dsl, $searchType);
     }
 
     /**

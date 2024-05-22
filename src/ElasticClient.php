@@ -22,12 +22,18 @@ class ElasticClient
         return $this->client;
     }
 
-    public function search(string $indexName, array $dsl): array
+    public function search(string $indexName, array $dsl, ?string $searchType = null): array
     {
         $this->queryLog?->log($indexName, $dsl);
 
         return $this->client
-            ->search(['index' => $indexName, 'body' => $dsl])
+            ->search(
+                array_filter([
+                    'index' => $indexName,
+                    'body' => $dsl,
+                    'search_type' => $searchType,
+                ])
+            )
             ->asArray();
     }
 
