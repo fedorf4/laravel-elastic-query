@@ -3,6 +3,7 @@
 namespace Ensi\LaravelElasticQuery\Tests\Seeds;
 
 use Ensi\LaravelElasticQuery\ElasticClient;
+use Illuminate\Support\Facades\ParallelTesting;
 
 abstract class IndexSeeder
 {
@@ -49,12 +50,12 @@ abstract class IndexSeeder
 
     protected function isIndexExists(): bool
     {
-        return $this->client->indicesExists($this->indexName);
+        return $this->client->indicesExists($this->getIndexName());
     }
 
     protected function dropIndex(): void
     {
-        $this->client->indicesDelete($this->indexName);
+        $this->client->indicesDelete($this->getIndexName());
     }
 
     protected function createIndex(): void
@@ -69,21 +70,21 @@ abstract class IndexSeeder
             $settings['settings'] = $this->settings;
         }
 
-        $this->client->indicesCreate($this->indexName, $settings);
+        $this->client->indicesCreate($this->getIndexName(), $settings);
     }
 
     protected function loadFixtures(): void
     {
-        $baseDir = __DIR__.'/fixtures/';
+        $baseDir = __DIR__ . '/fixtures/';
 
         $hasChanges = collect($this->fixtures)
             ->reduce(
-                fn (bool $carry, string $fixture) => $this->loadFixture($baseDir.$fixture) || $carry,
+                fn (bool $carry, string $fixture) => $this->loadFixture($baseDir . $fixture) || $carry,
                 false
             );
 
         if ($hasChanges) {
-            $this->client->indicesRefresh($this->indexName);
+            $this->client->indicesRefresh($this->getIndexName());
         }
     }
 
@@ -99,7 +100,7 @@ abstract class IndexSeeder
             ->flatMap(fn (array $document, int $index) => $this->documentToCommand($document, $index))
             ->toArray();
 
-        $this->client->bulk($this->indexName, $body);
+        $this->client->bulk($this->getIndexName(), $body);
 
         return true;
     }
@@ -107,8 +108,13 @@ abstract class IndexSeeder
     protected function documentToCommand(array $document, int $id): array
     {
         return [
-            ['index' => ['_index' => $this->indexName, '_id' => $id]],
+            ['index' => ['_index' => $this->getIndexName(), '_id' => $id]],
             $document,
         ];
+    }
+
+    protected function getIndexName(): string
+    {
+        return $this->indexName . (ParallelTesting::token() ?: 0);
     }
 }
