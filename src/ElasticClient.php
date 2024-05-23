@@ -26,27 +26,25 @@ class ElasticClient
     {
         $this->queryLog?->log($indexName, $dsl);
 
-        return $this->client
-            ->search(
-                array_filter([
-                    'index' => $indexName,
-                    'body' => $dsl,
-                    'search_type' => $searchType,
-                ])
-            );
+        return $this->client->search(array_filter([
+            'index' => $indexName,
+            'body' => $dsl,
+            'search_type' => $searchType,
+        ]));
     }
 
     public function searchAsync(string $indexName, array $dsl, ?string $searchType = null): FutureArray
     {
         $this->queryLog?->log($indexName, $dsl);
 
-        return $this->client->search($this->paramsAsync(
-            array_filter([
-                'index' => $indexName,
-                'body' => $dsl,
-                'search_type' => $searchType,
-            ]),
-        ));
+        /** @var FutureArray $result */
+        $result = $this->client->search($this->paramsAsync(array_filter([
+            'index' => $indexName,
+            'body' => $dsl,
+            'search_type' => $searchType,
+        ])));
+
+        return $result;
     }
 
     public function deleteByQuery(string $indexName, array $dsl): array

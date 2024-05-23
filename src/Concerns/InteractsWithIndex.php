@@ -35,7 +35,7 @@ trait InteractsWithIndex
     }
 
     /**
-     * @see SearchIndex::search()
+     * @see SearchIndex::searchAsync()
      */
     public function searchAsync(array $dsl, ?string $searchType = null): FutureArray
     {

@@ -2,6 +2,8 @@
 
 namespace Ensi\LaravelElasticQuery\Contracts;
 
+use GuzzleHttp\Ring\Future\FutureArray;
+
 interface SearchIndex
 {
     /**
@@ -19,6 +21,15 @@ interface SearchIndex
      * @return array
      */
     public function search(array $dsl, ?string $searchType = null): array;
+
+    /**
+     * Perform search query async.
+     *
+     * @param array $dsl
+     * @param string|null $searchType
+     * @return FutureArray
+     */
+    public function searchAsync(array $dsl, ?string $searchType = null): FutureArray;
 
     /**
      * Perform delete by query.

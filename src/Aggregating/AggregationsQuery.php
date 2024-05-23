@@ -50,8 +50,6 @@ class AggregationsQuery implements AggregationsBuilder
 
             return $this->responseToResults($response);
         }
-
-        return $this->aggregations->parseResults($response['aggregations'] ?? []);
     }
 
     protected function execute(bool $async = false): array|FutureArray
