@@ -9,7 +9,7 @@ class ElasticQueryServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'laravel-elastic-query');
+        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-elastic-query.php', 'laravel-elastic-query');
 
         $this->app->scoped(
             ElasticClient::class,
@@ -21,7 +21,7 @@ class ElasticQueryServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('laravel-elastic-query.php'),
+                __DIR__ . '/../config/laravel-elastic-query.php' => config_path('laravel-elastic-query.php'),
             ], 'config');
         }
     }
