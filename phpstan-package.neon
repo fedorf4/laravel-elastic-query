@@ -1,4 +1,1 @@
 parameters:
-    excludePaths:
-        - src/ActionJob.php
-        - src/RdKafkaProducerMiddleware.php
