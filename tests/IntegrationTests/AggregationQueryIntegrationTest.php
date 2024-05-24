@@ -5,8 +5,8 @@ use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\MinMax;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
+use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
-use Ensi\LaravelElasticQuery\Tests\Models\ProductsIndex;
 
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;

@@ -3,8 +3,8 @@
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
+use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTests\Search\TestCases\SearchIntegrationTestCase;
-use Ensi\LaravelElasticQuery\Tests\Models\ProductsIndex;
 
 uses(SearchIntegrationTestCase::class);
 

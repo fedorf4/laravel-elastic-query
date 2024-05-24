@@ -1,6 +1,6 @@
 <?php
 
-namespace Ensi\LaravelElasticQuery\Tests\Models;
+namespace Ensi\LaravelElasticQuery\Tests\Data\Models;
 
 use Ensi\LaravelElasticQuery\ElasticIndex;
 
