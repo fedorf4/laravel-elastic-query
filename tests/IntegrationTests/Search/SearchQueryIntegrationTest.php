@@ -2,9 +2,9 @@
 
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
 use Ensi\LaravelElasticQuery\Contracts\SortableQuery;
+use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTests\Search\TestCases\SearchIntegrationTestCase;
-use Ensi\LaravelElasticQuery\Tests\Models\ProductsIndex;
 
 use function PHPUnit\Framework\assertArrayNotHasKey;
 use function PHPUnit\Framework\assertCount;

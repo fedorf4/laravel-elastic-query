@@ -1,7 +1,7 @@
 <?php
 
+use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
-use Ensi\LaravelElasticQuery\Tests\Models\ProductsIndex;
 
 use function PHPUnit\Framework\assertEquals;
 

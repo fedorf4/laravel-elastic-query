@@ -3,7 +3,7 @@
 namespace Ensi\LaravelElasticQuery\Tests;
 
 use Ensi\LaravelElasticQuery\ElasticQuery;
-use Ensi\LaravelElasticQuery\Tests\Seeds\ProductIndexSeeder;
+use Ensi\LaravelElasticQuery\Tests\Data\Seeds\ProductIndexSeeder;
 
 class IntegrationTestCase extends TestCase
 {

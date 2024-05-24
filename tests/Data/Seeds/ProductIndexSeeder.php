@@ -1,6 +1,6 @@
 <?php
 
-namespace Ensi\LaravelElasticQuery\Tests\Seeds;
+namespace Ensi\LaravelElasticQuery\Tests\Data\Seeds;
 
 class ProductIndexSeeder extends IndexSeeder
 {
