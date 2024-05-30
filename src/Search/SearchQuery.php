@@ -156,7 +156,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
 
     protected function sourceToDSL(bool $source): array | bool
     {
-        return  $source && !$this->fields ?
+        return $source && !$this->fields ?
             [
                 'include' => $this->include,
                 'exclude' => $this->exclude,
