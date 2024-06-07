@@ -8,6 +8,7 @@ use Ensi\LaravelElasticQuery\Concerns\DecoratesBoolQuery;
 use Ensi\LaravelElasticQuery\Concerns\ExtendsSort;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
 use Ensi\LaravelElasticQuery\Contracts\CollapsibleQuery;
+use Ensi\LaravelElasticQuery\Contracts\HighlightingQuery;
 use Ensi\LaravelElasticQuery\Contracts\ScriptSortType;
 use Ensi\LaravelElasticQuery\Contracts\SearchIndex;
 use Ensi\LaravelElasticQuery\Contracts\SortableQuery;
@@ -15,6 +16,7 @@ use Ensi\LaravelElasticQuery\Contracts\SortOrder;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
 use Ensi\LaravelElasticQuery\Scripts\Script;
 use Ensi\LaravelElasticQuery\Search\Collapsing\Collapse;
+use Ensi\LaravelElasticQuery\Search\Highlight\Highlight;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
 use GuzzleHttp\Ring\Future\FutureArray;
@@ -22,7 +24,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
-class SearchQuery implements SortableQuery, CollapsibleQuery
+class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 {
     use DecoratesBoolQuery;
     use ExtendsSort;
@@ -30,6 +32,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
     protected BoolQueryBuilder $boolQuery;
     protected SortCollection $sorts;
     protected ?Collapse $collapse = null;
+    protected ?Highlight $highlight = null;
     protected ?AggregationCollection $aggregations = null;
     protected ?int $size = null;
     protected ?int $from = null;
@@ -164,6 +167,10 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
             $dsl['collapse'] = $this->collapse->toDSL();
         }
 
+        if (!is_null($this->highlight)) {
+            $dsl['highlight'] = $this->highlight->toDSL();
+        }
+
         if ($cursor !== null && !$cursor->isBOF()) {
             $dsl['search_after'] = $cursor->toDSL();
         }
@@ -217,6 +224,13 @@ class SearchQuery implements SortableQuery, CollapsibleQuery
     public function collapse(string $field, array $innerHits = []): static
     {
         $this->collapse = new Collapse($field, $innerHits);
+
+        return $this;
+    }
+
+    public function highlight(Highlight $highlight): static
+    {
+        $this->highlight = $highlight;
 
         return $this;
     }
