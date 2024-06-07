@@ -2,6 +2,7 @@
 
 namespace Ensi\LaravelElasticQuery\Search\Highlight;
 
+use Ensi\LaravelElasticQuery\Contracts\DSL;
 use Ensi\LaravelElasticQuery\Contracts\DSLAware;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
 use Ensi\LaravelElasticQuery\Search\Enums\BoundaryScanner;
@@ -60,7 +61,7 @@ class Highlight implements DSLAware
 
     public function toDSL(): array|stdClass
     {
-        $dsl = array_filter([
+        return DSL::filter(array_filter([
             'boundary_chars' => $this->boundaryChars,
             'boundary_max_scan' => $this->boundaryMaxScan,
             'boundary_scanner' => $this->boundaryScanner,
@@ -90,12 +91,6 @@ class Highlight implements DSLAware
             'max_analyzed_offset' => $this->maxAnalyzedOffset,
             'tags_schema' => $this->tagsSchema,
             'type' => $this->type,
-        ], fn (mixed $item) => !is_null($item));
-
-        if (!$dsl) {
-            return new stdClass();
-        }
-
-        return $dsl;
+        ]));
     }
 }
