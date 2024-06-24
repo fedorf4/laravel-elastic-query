@@ -3,8 +3,10 @@
 namespace Ensi\LaravelElasticQuery\Suggesting;
 
 use Ensi\LaravelElasticQuery\Contracts\SearchIndex;
+use Ensi\LaravelElasticQuery\Response;
 use Ensi\LaravelElasticQuery\Suggesting\Request\PhraseSuggester;
 use Ensi\LaravelElasticQuery\Suggesting\Request\TermSuggester;
+use Http\Promise\Promise;
 use Illuminate\Support\Collection;
 
 class SuggestQuery
@@ -34,14 +36,17 @@ class SuggestQuery
     }
 
     //region Executing
-    public function get(): Collection
+    public function get(): Collection|Promise
     {
-        $response = $this->execute();
-
-        return $this->suggesters->parseResults($response['suggest'] ?? []);
+        return Response::fn(
+            $this->execute(),
+            function (array $response) {
+                return $this->suggesters->parseResults($response['suggest'] ?? []);
+            }
+        );
     }
 
-    protected function execute(): array
+    protected function execute(): array|Promise
     {
         $dsl = [
             'suggest' => $this->suggesters->toDSL(),

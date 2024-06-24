@@ -14,11 +14,13 @@ use Ensi\LaravelElasticQuery\Contracts\SearchIndex;
 use Ensi\LaravelElasticQuery\Contracts\SortableQuery;
 use Ensi\LaravelElasticQuery\Contracts\SortOrder;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
+use Ensi\LaravelElasticQuery\Response;
 use Ensi\LaravelElasticQuery\Scripts\Script;
 use Ensi\LaravelElasticQuery\Search\Collapsing\Collapse;
 use Ensi\LaravelElasticQuery\Search\Highlight\Highlight;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
+use Http\Promise\Promise;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
@@ -47,35 +49,42 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     }
 
     //region Executing
-    public function get(): Collection
+    public function get(): Collection|Promise
     {
         if ($this->size === 0) {
             return new Collection();
         }
 
-        $response = $this->execute(size: $this->size, from: $this->from);
-
-        return $this->parseHits($response);
+        return Response::fn(
+            $this->execute(size: $this->size, from: $this->from),
+            function (array $response) {
+                return $this->parseHits($response);
+            }
+        );
     }
 
-    public function paginate(int $size, int $offset = 0): Page
+    public function paginate(int $size, int $offset = 0): Page|Promise
     {
         Assert::greaterThan($size, 0);
         Assert::greaterThanEq($offset, 0);
 
-        $response = $this->execute(size: $size, from: $offset, totals: true);
-        $hits = $this->parseHits($response);
+        return Response::fn(
+            $this->execute(size: $size, from: $offset, totals: true),
+            function (array $response) use ($size, $offset) {
+                $hits = $this->parseHits($response);
 
-        return new Page(
-            $size,
-            $hits,
-            aggs: $this->aggregations?->parseResults($response['aggregations'] ?? []),
-            offset: $offset,
-            total: data_get($response, 'hits.total.value', 0)
+                return new Page(
+                    $size,
+                    $hits,
+                    aggs: $this->aggregations?->parseResults($response['aggregations'] ?? []),
+                    offset: $offset,
+                    total: data_get($response, 'hits.total.value', 0)
+                );
+            }
         );
     }
 
-    public function cursorPaginate(int $size, ?string $cursor = null): CursorPage
+    public function cursorPaginate(int $size, ?string $cursor = null): CursorPage|Promise
     {
         Assert::greaterThan($size, 0);
 
@@ -86,16 +95,20 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
             throw new InvalidArgumentException('Cursor is not suitable for current sort');
         }
 
-        $response = $this->execute($sorts, $size, cursor: $current);
-        $hits = $this->parseHits($response);
+        return Response::fn(
+            $this->execute($sorts, $size, cursor: $current),
+            function (array $response) use ($size, $cursor, $sorts, $current) {
+                $hits = $this->parseHits($response);
 
-        return new CursorPage(
-            $size,
-            $hits,
-            aggs: $this->aggregations?->parseResults($response['aggregations'] ?? []),
-            current: $current->encode(),
-            next: $this->findNextCursor($sorts, $size, $hits),
-            previous: $this->findPreviousCursor($sorts, $size, $current)
+                return new CursorPage(
+                    $size,
+                    $hits,
+                    aggs: $this->aggregations?->parseResults($response['aggregations'] ?? []),
+                    current: $current->encode(),
+                    next: $this->findNextCursor($sorts, $size, $hits),
+                    previous: $this->findPreviousCursor($sorts, $size, $current)
+                );
+            }
         );
     }
 
@@ -106,18 +119,22 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
             : $sorts->createCursor($hits->last())?->encode();
     }
 
-    private function findPreviousCursor(SortCollection $sorts, int $size, Cursor $current): ?string
+    private function findPreviousCursor(SortCollection $sorts, int $size, Cursor $current): string|null|Promise
     {
         if ($current->isBOF()) {
             return null;
         }
 
-        $response = $this->execute($sorts->invert(), $size, source: false, cursor: $current);
-        $hits = $this->parseHits($response);
+        return Response::fn(
+            $this->execute($sorts->invert(), $size, source: false, cursor: $current),
+            function (array $response) use ($sorts, $size, $current) {
+                $hits = $this->parseHits($response);
 
-        return $hits->count() < $size
-            ? Cursor::BOF()->encode()
-            : $sorts->createCursor($hits->last())?->encode();
+                return $hits->count() < $size
+                    ? Cursor::BOF()->encode()
+                    : $sorts->createCursor($hits->last())?->encode();
+            }
+        );
     }
 
     protected function execute(
@@ -127,7 +144,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
         bool $totals = false,
         bool $source = true,
         ?Cursor $cursor = null
-    ): array {
+    ): array|Promise {
         $dsl = [
             'size' => $size,
             'from' => $from,

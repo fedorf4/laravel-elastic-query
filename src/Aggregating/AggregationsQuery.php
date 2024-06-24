@@ -7,6 +7,8 @@ use Ensi\LaravelElasticQuery\Concerns\ConstructsAggregations;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Contracts\SearchIndex;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
+use Ensi\LaravelElasticQuery\Response;
+use Http\Promise\Promise;
 use Illuminate\Support\Collection;
 
 class AggregationsQuery implements AggregationsBuilder
@@ -29,18 +31,21 @@ class AggregationsQuery implements AggregationsBuilder
         return $this;
     }
 
-    public function get(): Collection
+    public function get(): Collection|Promise
     {
         if ($this->aggregations->isEmpty()) {
             return new Collection();
         }
 
-        $response = $this->execute();
-
-        return $this->aggregations->parseResults($response['aggregations'] ?? []);
+        return Response::fn(
+            $this->execute(),
+            function (array $response) {
+                return $this->aggregations->parseResults($response['aggregations'] ?? []);
+            }
+        );
     }
 
-    protected function execute(): array
+    protected function execute(): array|Promise
     {
         $dsl = [
             'size' => 0,
