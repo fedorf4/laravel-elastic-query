@@ -49,7 +49,7 @@ trait InteractsWithIndex
 
     public function create(): ?Promise
     {
-        $this->resolveClient()->indicesCreate($this->indexName(), $this->settings());
+        return $this->resolveClient()->indicesCreate($this->indexName(), $this->settings());
     }
 
     public function bulk(array $body): array|Promise
