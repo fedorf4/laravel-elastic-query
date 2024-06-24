@@ -278,6 +278,67 @@ Hosts should be comma seperated string of hosts with protocol prefix and port su
  ELASTICSEARCH_SSL_VERIFICATION=true,
 ```
 
+## Async Usage
+
+All methods can return a `Promise`.  
+To enable this, you will need to add `http_async_client` to your config and then execute `ElasticSearch::getClient()->setAsync(true).`  
+To disable: `ElasticQuery::getClient()->setAsync(false)`.
+
+For example:
+
+laravel-elastic-query.php:
+
+```php
+return [
+    'connection' => [
+    
+        // ..
+
+        'http_async_client' => [HttpClientOptionsBuilder::class, 'getAsyncClient'],
+    ],
+];
+```
+
+HttpClientOptionsBuilder:
+
+```php
+use Http\Adapter\Guzzle7\Client as GuzzleAdapter;
+use Http\Client\HttpAsyncClient;
+
+class HttpClientOptionsBuilder
+{
+    public static function getAsyncClient(): HttpAsyncClient
+    {
+        return GuzzleAdapter::createWithConfig([]);
+    }
+}
+```
+
+Action:
+
+```php
+
+use Ensi\LaravelElasticQuery\ElasticQuery;
+use GuzzleHttp\Promise\Utils;
+
+ElasticQuery::getClient()->setAsync(true);
+
+// With async
+$promises = [
+    'key1' => FirstIndex::query()->get(),
+    'key2' => FirstIndex::suggest()->paginate(/* ... */),
+];
+
+$responses = Utils::unwrap($promises);
+
+$firstResponse = $responses['key1'];
+
+ElasticQuery::getClient()->setAsync(false);
+
+// Without async
+$firstResponse = FirstIndex::query()->get()
+```
+
 ## Elasticsearch 7 and 8 support.
 
 Due to the incompatibility of clients for Elasticsearch 7 and 8, separate releases will be created for these versions.
