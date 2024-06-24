@@ -2,7 +2,7 @@
 
 namespace Ensi\LaravelElasticQuery;
 
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Ensi\LaravelElasticQuery\Debug\QueryLogRecord;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
