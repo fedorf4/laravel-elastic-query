@@ -319,7 +319,6 @@ Action:
 ```php
 
 use Ensi\LaravelElasticQuery\ElasticQuery;
-use GuzzleHttp\Promise\Utils;
 
 ElasticQuery::getClient()->setAsync(true);
 
@@ -329,9 +328,12 @@ $promises = [
     'key2' => FirstIndex::suggest()->paginate(/* ... */),
 ];
 
-$responses = Utils::unwrap($promises);
+$results = [];
+foreach ($promises as $key => $promise) {
+    $results[$key] = $promise->wait();
+}
 
-$firstResponse = $responses['key1'];
+$firstResponse = $results['key1'];
 
 ElasticQuery::getClient()->setAsync(false);
 
