@@ -11,7 +11,7 @@ Working with Elasticsearch in an Eloquent-like fashion.
 You can install the package via composer:
 
 ```bash
-composer require ensi/laravel-elastic-querys
+composer require ensi/laravel-elastic-query
 ```
 
 Publish config file like this:
