@@ -15,6 +15,8 @@ return [
         'http_client' => null, // class implementing the \Psr\Http\Client\ClientInterface
         'http_client_options' => null, // for call_user_func_array
 
+        'http_client_logger' => null, // for call_user_func_array, return class implementing the \Psr\Log\LoggerInterface
+
         'http_async_client' => null, // for call_user_func_array, return class implementing the \Http\Client\HttpAsyncClient
     ],
 ];
