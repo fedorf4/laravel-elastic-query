@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 class CursorPage
 {
     public function __construct(
-        int $size,
+        public int $size,
         public Collection $hits,
         public Collection|null $aggs,
         public ?string $current = null,

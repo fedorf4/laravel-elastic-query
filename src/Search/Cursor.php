@@ -34,7 +34,7 @@ class Cursor implements DSLAware
     {
         return blank($source)
             ? null
-            : new Cursor(json_decode(base64_decode($source), true));
+            : new static(json_decode(base64_decode($source), true));
     }
 
     public static function BOF(): static
