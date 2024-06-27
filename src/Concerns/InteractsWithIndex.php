@@ -8,6 +8,7 @@ use Ensi\LaravelElasticQuery\ElasticClient;
 use Ensi\LaravelElasticQuery\Search\SearchQuery;
 use Ensi\LaravelElasticQuery\Suggesting\SuggestQuery;
 use Exception;
+use Http\Promise\Promise;
 
 trait InteractsWithIndex
 {
@@ -28,7 +29,7 @@ trait InteractsWithIndex
     /**
      * @see SearchIndex::search()
      */
-    public function search(array $dsl, ?string $searchType = null): array
+    public function search(array $dsl, ?string $searchType = null): array|Promise
     {
         return $this->resolveClient()->search($this->indexName(), $dsl, $searchType);
     }
@@ -36,42 +37,42 @@ trait InteractsWithIndex
     /**
      * @see SearchIndex::search()
      */
-    public function deleteByQuery(array $dsl): array
+    public function deleteByQuery(array $dsl): array|Promise
     {
         return $this->resolveClient()->deleteByQuery($this->indexName(), $dsl);
     }
 
-    public function isCreated(): bool
+    public function isCreated(): bool|Promise
     {
         return $this->resolveClient()->indicesExists($this->indexName());
     }
 
-    public function create(): void
+    public function create(): ?Promise
     {
-        $this->resolveClient()->indicesCreate($this->indexName(), $this->settings());
+        return $this->resolveClient()->indicesCreate($this->indexName(), $this->settings());
     }
 
-    public function bulk(array $body): array
+    public function bulk(array $body): array|Promise
     {
         return $this->resolveClient()->bulk($this->indexName(), $body);
     }
 
-    public function get(int|string $id): array
+    public function get(int|string $id): array|Promise
     {
         return $this->resolveClient()->get($this->indexName(), $id);
     }
 
-    public function documentDelete(int|string $id): array
+    public function documentDelete(int|string $id): array|Promise
     {
         return $this->resolveClient()->documentDelete($this->indexName(), $id);
     }
 
-    public function catIndices(string $indexName, ?array $getFields = null): array
+    public function catIndices(string $indexName, ?array $getFields = null): array|Promise
     {
         return $this->resolveClient()->catIndices($indexName, $getFields);
     }
 
-    public function indicesInfo(array $columns = ['i'], array $sort = [], ?string $health = null): array
+    public function indicesInfo(array $columns = ['i'], array $sort = [], ?string $health = null): array|Promise
     {
         return $this->resolveClient()->indicesInfo(
             indices: [$this->indexName()],
@@ -81,17 +82,17 @@ trait InteractsWithIndex
         );
     }
 
-    public function indicesDelete(string $index): array
+    public function indicesDelete(string $index): array|Promise
     {
         return $this->resolveClient()->indicesDelete($index);
     }
 
-    public function indicesRefresh(): array
+    public function indicesRefresh(): array|Promise
     {
         return $this->resolveClient()->indicesRefresh($this->indexName());
     }
 
-    public function indicesReloadSearchAnalyzers(): array
+    public function indicesReloadSearchAnalyzers(): array|Promise
     {
         return $this->resolveClient()->indicesReloadSearchAnalyzers($this->indexName());
     }

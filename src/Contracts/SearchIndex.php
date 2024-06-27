@@ -2,6 +2,8 @@
 
 namespace Ensi\LaravelElasticQuery\Contracts;
 
+use Http\Promise\Promise;
+
 interface SearchIndex
 {
     /**
@@ -16,15 +18,15 @@ interface SearchIndex
      *
      * @param array $dsl
      * @param string|null $searchType
-     * @return array
+     * @return array|Promise
      */
-    public function search(array $dsl, ?string $searchType = null): array;
+    public function search(array $dsl, ?string $searchType = null): array|Promise;
 
     /**
      * Perform delete by query.
      *
      * @param array $dsl
-     * @return array
+     * @return array|Promise
      */
-    public function deleteByQuery(array $dsl): array;
+    public function deleteByQuery(array $dsl): array|Promise;
 }

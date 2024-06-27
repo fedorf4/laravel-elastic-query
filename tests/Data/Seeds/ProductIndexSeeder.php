@@ -2,10 +2,10 @@
 
 namespace Ensi\LaravelElasticQuery\Tests\Data\Seeds;
 
+use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
+
 class ProductIndexSeeder extends IndexSeeder
 {
-    protected string $indexName = 'test_products';
-
     protected array $fixtures = ['products_default.json'];
 
     protected array $settings = [
@@ -60,4 +60,9 @@ class ProductIndexSeeder extends IndexSeeder
             ],
         ],
     ];
+
+    protected function getIndexName(): string
+    {
+        return ProductsIndex::fullName();
+    }
 }

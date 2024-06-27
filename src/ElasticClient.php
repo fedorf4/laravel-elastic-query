@@ -4,8 +4,10 @@ namespace Ensi\LaravelElasticQuery;
 
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\Response\Elasticsearch;
 use Ensi\LaravelElasticQuery\Debug\QueryLog;
 use Ensi\LaravelElasticQuery\Debug\QueryLogRecord;
+use Http\Promise\Promise;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -22,95 +24,96 @@ class ElasticClient
         return $this->client;
     }
 
-    public function search(string $indexName, array $dsl, ?string $searchType = null): array
+    public function search(string $indexName, array $dsl, ?string $searchType = null): array|Promise
     {
         $this->queryLog?->log($indexName, $dsl);
 
-        return $this->client
-            ->search(
-                array_filter([
-                    'index' => $indexName,
-                    'body' => $dsl,
-                    'search_type' => $searchType,
-                ])
-            )
-            ->asArray();
+        return Response::array(
+            $this->client->search(array_filter([
+                'index' => $indexName,
+                'body' => $dsl,
+                'search_type' => $searchType,
+            ]))
+        );
     }
 
-    public function deleteByQuery(string $indexName, array $dsl): array
+    public function deleteByQuery(string $indexName, array $dsl): array|Promise
     {
         $this->queryLog?->log($indexName, $dsl);
 
-        return $this->client
-            ->deleteByQuery(['index' => $indexName, 'body' => $dsl])
-            ->asArray();
+        return Response::array(
+            $this->client->deleteByQuery(['index' => $indexName, 'body' => $dsl])
+        );
     }
 
-    public function get(string $indexName, int|string $id): array
+    public function get(string $indexName, int|string $id): array|Promise
     {
-        return $this->client
-            ->get(['index' => $indexName, 'id' => $id])
-            ->asArray();
+        return Response::array(
+            $this->client->get(['index' => $indexName, 'id' => $id])
+        );
     }
 
-    public function indicesExists(string $index): bool
+    public function indicesExists(string $index): bool|Promise
     {
-        return $this->client
-            ->indices()
-            ->exists(['index' => $index])
-            ->asBool();
+        return Response::bool(
+            $this->client->indices()->exists(['index' => $index])
+        );
     }
 
-    public function indicesCreate(string $index, array $settings): void
+    public function indicesCreate(string $index, array $settings): ?Promise
     {
-        $this->client->indices()->create([
-            'index' => $index,
-            'body' => $settings,
-        ]);
+        return Response::void(
+            $this->client->indices()->create([
+                'index' => $index,
+                'body' => $settings,
+            ])
+        );
     }
 
-    public function bulk(string $index, array $body): array
+    public function bulk(string $index, array $body): array|Promise
     {
-        return $this->client
-            ->bulk(['index' => $index, 'body' => $body])
-            ->asArray();
+        return Response::array(
+            $this->client->bulk(['index' => $index, 'body' => $body])
+        );
     }
 
-    public function documentDelete(string $index, int|string $id): array
+    public function documentDelete(string $index, int|string $id): array|Promise
     {
-        return $this->client
-            ->delete(['index' => $index, 'id' => $id])
-            ->asArray();
+        return Response::array(
+            $this->client->delete(['index' => $index, 'id' => $id])
+        );
     }
 
     public function catIndices(string $indexName, ?array $getFields = null): array
     {
-        $response = $this->client
-            ->indices()
-            ->stats(['index' => "$indexName*"])
-            ->asArray();
+        return Response::fn(
+            $this->client->indices()->stats(['index' => "{$indexName}*"]),
+            function (Elasticsearch $response) use ($getFields) {
+                $response = $response->asArray();
 
-        $results = [];
-        foreach ($response['indices'] as $indexName => $stat) {
-            $item = [
-                'index' => $indexName,
-                'health' => $stat['health'],
-                'status' => $stat['status'],
-                'uuid' => $stat['uuid'],
-                'pri' => Arr::get($stat, 'primaries.shard_stats.total_count'),
-                'rep' => Arr::get($stat, 'total.shard_stats.total_count'),
-                'docs.count' => Arr::get($stat, 'total.docs.count'),
-                'docs.deleted' => Arr::get($stat, 'total.docs.deleted'),
-                'store.size' => Arr::get($stat, 'total.store.size_in_bytes'),
-                'pri.store.size' => Arr::get($stat, 'primaries.store.size_in_bytes'),
-            ];
+                $results = [];
+                foreach ($response['indices'] as $indexName => $stat) {
+                    $item = [
+                        'index' => $indexName,
+                        'health' => $stat['health'],
+                        'status' => $stat['status'],
+                        'uuid' => $stat['uuid'],
+                        'pri' => Arr::get($stat, 'primaries.shard_stats.total_count'),
+                        'rep' => Arr::get($stat, 'total.shard_stats.total_count'),
+                        'docs.count' => Arr::get($stat, 'total.docs.count'),
+                        'docs.deleted' => Arr::get($stat, 'total.docs.deleted'),
+                        'store.size' => Arr::get($stat, 'total.store.size_in_bytes'),
+                        'pri.store.size' => Arr::get($stat, 'primaries.store.size_in_bytes'),
+                    ];
 
-            $results[] = !$getFields
-                ? $item
-                : Arr::only($item, $getFields);
-        }
+                    $results[] = !$getFields
+                        ? $item
+                        : Arr::only($item, $getFields);
+                }
 
-        return $results;
+                return $results;
+            }
+        );
     }
 
     public function indicesInfo(
@@ -118,7 +121,7 @@ class ElasticClient
         array $columns = ['i'],
         array $sort = [],
         ?string $health = null
-    ): array {
+    ): array|Promise {
         $params = ['format' => 'json', 'h' => 'i'];
         if ($indices) {
             $params['index'] = implode(',', $indices);
@@ -133,34 +136,30 @@ class ElasticClient
             $params['s'] = implode(',', $sort);
         }
 
-        return $this->client
-            ->cat()
-            ->indices($params)
-            ->asArray();
+        return Response::array(
+            $this->client->cat()->indices($params)
+        );
     }
 
-    public function indicesDelete(string $indexName): array
+    public function indicesDelete(string $indexName): array|Promise
     {
-        return $this->client
-            ->indices()
-            ->delete(['index' => $indexName])
-            ->asArray();
+        return Response::array(
+            $this->client->indices()->delete(['index' => $indexName])
+        );
     }
 
-    public function indicesRefresh(string $indexName): array
+    public function indicesRefresh(string $indexName): array|Promise
     {
-        return $this->client
-            ->indices()
-            ->refresh(['index' => $indexName])
-            ->asArray();
+        return Response::array(
+            $this->client->indices()->refresh(['index' => $indexName])
+        );
     }
 
-    public function indicesReloadSearchAnalyzers(string $indexName): array
+    public function indicesReloadSearchAnalyzers(string $indexName): array|Promise
     {
-        return $this->client
-            ->indices()
-            ->reloadSearchAnalyzers(['index' => $indexName])
-            ->asArray();
+        return Response::array(
+            $this->client->indices()->reloadSearchAnalyzers(['index' => $indexName])
+        );
     }
 
     public function enableQueryLog(): void
@@ -194,6 +193,14 @@ class ElasticClient
             $builder->setBasicAuthentication($username, $password);
         }
 
+        if (filled($config['http_client_logger'] ?? null)) {
+            $logger = call_user_func_array($config['http_client_logger'], []);
+
+            if (!is_null($logger)) {
+                $builder->setLogger($logger);
+            }
+        }
+
         if (filled($config['http_client'] ?? null)) {
             $client = new $config['http_client']();
 
@@ -204,6 +211,10 @@ class ElasticClient
             $options = call_user_func_array($config['http_client_options'], []);
 
             $builder->setHttpClientOptions($options);
+        }
+
+        if (filled($config['http_async_client'] ?? null)) {
+            $builder->setAsyncHttpClient(call_user_func_array($config['http_async_client'], []));
         }
 
         return new static($builder->build());
