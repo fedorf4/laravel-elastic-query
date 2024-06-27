@@ -1,13 +1,40 @@
 # Laravel Elastic Query
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ensi/laravel-elastic-query.svg?style=flat-square)](https://packagist.org/packages/ensi/laravel-elastic-query)
+[![Tests](https://github.com/ensi-platform/laravel-elastic-query/actions/workflows/run-tests.yml/badge.svg?branch=v8)](https://github.com/ensi-platform/laravel-elastic-query/actions/workflows/run-tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/ensi/laravel-elastic-query.svg?style=flat-square)](https://packagist.org/packages/ensi/laravel-elastic-query)
+
 Working with Elasticsearch in an Eloquent-like fashion.
 
 ## Installation
 
 You can install the package via composer:
 
-1. `composer require ensi/laravel-elastic-query`
-2. Set `ELASTICSEARCH_HOSTS` in your `.env` file. `,` can be used as a delimeter.
+```bash
+composer require ensi/laravel-elastic-query
+```
+
+Publish config file like this:
+
+```bash
+php artisan vendor:publish --provider="Ensi\LaravelElasticQuery\ElasticQueryServiceProvider"
+```
+
+Set `ELASTICSEARCH_HOSTS` in your `.env` file. `,` can be used as a delimeter.
+
+## Version Compatibility
+
+| Laravel Elastic Query                                                                | Laravel                              | PHP  | Elasticsearch |
+|--------------------------------------------------------------------------------------|--------------------------------------|------|---------------|
+| ^0.1.0                                                                               | ^8.0                                 | ^8.0 | 7.*           |
+| ^0.2.0                                                                               | ^8.0                                 | ^8.0 | 7.*           |
+| ^0.3.0                                                                               | ^8.0                                 | ^8.0 | 7.*           |
+| ^0.3.2                                                                               | ^8.0 \|\| ^9.0                       | ^8.0 | 7.*           |
+| ^7.x ([see details](https://github.com/ensi-platform/laravel-elastic-query/tree/v7)) | ^9.0 \|\| ^10.0 \|\| ^11.0           | ^8.1 | 7.*           |
+| ^8.0.0                                                                               | ^8.0 \|\| ^9.0                       | ^8.0 | 8.*           |
+| ^8.0.13                                                                              | ^8.0 \|\| ^9.0 \|\| ^10.0            | ^8.0 | 8.*           |
+| ^8.0.23                                                                              | ^8.0 \|\| ^9.0 \|\| ^10.0 \|\| ^11.0 | ^8.0 | 8.*           |
+| ^8.1.0                                                                               | ^9.0 \|\| ^10.0 \|\| ^11.0           | ^8.1 | 8.*           |
 
 ## Basic usage
 
@@ -356,14 +383,13 @@ Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 ### Testing
 
 1. composer install
-2. npm i
-3. Start Elasticsearch in your preferred way.
-4. Copy `phpunit.xml.dist` to `phpunit.xml` and set correct env variables there
-6. composer test
+2. start Elasticsearch in your preferred way
+3. if you need change `ELASTICSEARCH_HOSTS`, copy `phpunit.xml.dist` to `phpunit.xml` and fill value
+4. composer test
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Please review [our security policy](.github/SECURITY.md) on how to report security vulnerabilities.
 
 ## License
 
