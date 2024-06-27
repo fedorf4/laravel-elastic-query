@@ -3,11 +3,9 @@
 namespace Ensi\LaravelElasticQuery\Tests\Data\Seeds;
 
 use Ensi\LaravelElasticQuery\ElasticClient;
-use Illuminate\Support\Facades\ParallelTesting;
 
 abstract class IndexSeeder
 {
-    protected string $indexName = '';
     protected array $mappings = [];
     protected array $settings = [];
     protected array $fixtures = [];
@@ -20,6 +18,8 @@ abstract class IndexSeeder
     {
         $this->recreate = config('tests.recreate_index', true);
     }
+
+    abstract protected function getIndexName(): string;
 
     public function setClient(ElasticClient $client): void
     {
@@ -111,10 +111,5 @@ abstract class IndexSeeder
             ['index' => ['_index' => $this->getIndexName(), '_id' => $id]],
             $document,
         ];
-    }
-
-    protected function getIndexName(): string
-    {
-        return $this->indexName . (ParallelTesting::token() ?: 0);
     }
 }

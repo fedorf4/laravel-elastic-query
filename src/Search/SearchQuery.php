@@ -97,7 +97,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
         return Response::fn(
             $this->execute($sorts, $size, cursor: $current),
-            function (array $response) use ($size, $cursor, $sorts, $current) {
+            function (array $response) use ($size, $sorts, $current) {
                 $hits = $this->parseHits($response);
 
                 return new CursorPage(
@@ -127,7 +127,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
         return Response::fn(
             $this->execute($sorts->invert(), $size, source: false, cursor: $current),
-            function (array $response) use ($sorts, $size, $current) {
+            function (array $response) use ($sorts, $size) {
                 $hits = $this->parseHits($response);
 
                 return $hits->count() < $size
