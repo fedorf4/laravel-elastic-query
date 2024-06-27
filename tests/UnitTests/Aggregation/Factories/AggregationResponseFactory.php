@@ -2,7 +2,7 @@
 
 namespace Ensi\LaravelElasticQuery\Tests\UnitTests\Aggregation\Factories;
 
-use Ensi\TestFactories\Factory;
+use Ensi\LaravelTestFactories\Factory;
 
 class AggregationResponseFactory extends Factory
 {
