@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array get(string $indexName, int|string $id)
  * @method static array indicesExists(string $index)
  * @method static void indicesCreate(string $index, array $settings)
- * @method static array bulk(string $index, array $body)
+ * @method static array bulk(?string $index, array $body)
  * @method static array documentDelete(string $index, int|string $id)
  * @method static array catIndices(string $indexName, array|null $getFields = null)
  * @method static array indicesDelete(string $indexName)
