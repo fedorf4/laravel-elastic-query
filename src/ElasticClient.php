@@ -70,10 +70,10 @@ class ElasticClient
         );
     }
 
-    public function bulk(string $index, array $body): array|Promise
+    public function bulk(?string $index, array $body): array|Promise
     {
         return Response::array(
-            $this->client->bulk(['index' => $index, 'body' => $body])
+            $this->client->bulk(array_filter(['index' => $index, 'body' => $body]))
         );
     }
 
