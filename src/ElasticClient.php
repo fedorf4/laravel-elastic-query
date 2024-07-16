@@ -78,12 +78,12 @@ class ElasticClient
         ]);
     }
 
-    public function bulk(string $index, array $body): array
+    public function bulk(?string $index, array $body): array
     {
-        return $this->client->bulk([
+        return $this->client->bulk(array_filter([
             'index' => $index,
             'body' => $body,
-        ]);
+        ]));
     }
 
     public function documentDelete(string $index, int|string $id): array
