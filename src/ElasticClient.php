@@ -42,10 +42,10 @@ class ElasticClient
         $this->queryLog?->log($indexName, $dsl);
 
         return Response::array(
-            $this->client->termvectors(array_filter([
+            $this->client->termvectors([
                 'index' => $indexName,
                 'body' => $dsl,
-            ]))
+            ])
         );
     }
 

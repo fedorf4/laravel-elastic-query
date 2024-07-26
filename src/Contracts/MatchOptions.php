@@ -15,7 +15,7 @@ class MatchOptions implements Arrayable
         ?string $operator = null,
         ?string $fuzziness = null,
         ?string $minimumShouldMatch = null,
-        ?string $analyzer = null
+        ?string $analyzer = null,
     ): static {
         Assert::nullOrOneOf($operator, ['or', 'and']);
 
