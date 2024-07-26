@@ -272,6 +272,7 @@ $index->bulk(); // Send bulk request
 $index->get(); // Send get request
 $index->documentDelete(); // Send documentDelete request
 $index->deleteByQuery(); // Send deleteByQuery request
+$index->termvectors(); // Send termvectors request
 
 $index->catIndices();
 $index->indicesDelete();

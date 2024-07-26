@@ -14,7 +14,8 @@ class MatchOptions implements Arrayable
     public static function make(
         ?string $operator = null,
         ?string $fuzziness = null,
-        ?string $minimumShouldMatch = null
+        ?string $minimumShouldMatch = null,
+        ?string $analyzer = null,
     ): static {
         Assert::nullOrOneOf($operator, ['or', 'and']);
 
@@ -22,6 +23,7 @@ class MatchOptions implements Arrayable
             'operator' => $operator,
             'fuzziness' => $fuzziness,
             'minimum_should_match' => $minimumShouldMatch,
+            'analyzer' => $analyzer,
         ]));
     }
 
