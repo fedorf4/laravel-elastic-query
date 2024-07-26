@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array search(string $indexName, array $dsl, string|null $searchType = null)
  * @method static FutureArray searchAsync(string $indexName, array $dsl, string|null $searchType = null)
  * @method static array deleteByQuery(string $indexName, array $dsl)
+ * @method static array termvectors(string $indexName, array $dsl)
  * @method static array get(string $indexName, int|string $id)
  * @method static array indicesExists(string $index)
  * @method static void indicesCreate(string $index, array $settings)

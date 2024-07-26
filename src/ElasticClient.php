@@ -57,6 +57,16 @@ class ElasticClient
         ]);
     }
 
+    public function termvectors(string $indexName, array $dsl): array
+    {
+        $this->queryLog?->log($indexName, $dsl);
+
+        return $this->client->termvectors([
+            'index' => $indexName,
+            'body' => $dsl,
+        ]);
+    }
+
     public function get(string $indexName, int|string $id): array
     {
         return $this->client->get([
