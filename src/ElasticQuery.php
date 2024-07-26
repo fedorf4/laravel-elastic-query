@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static Client getClient()
  * @method static array|Promise search(string $indexName, array $dsl, string|null $searchType = null)
  * @method static array|Promise deleteByQuery(string $indexName, array $dsl)
+ * @method static array|Promise termvectors(string $indexName, array $dsl)
  * @method static array|Promise get(string $indexName, int|string $id)
  * @method static array|Promise indicesExists(string $index)
  * @method static null|Promise indicesCreate(string $index, array $settings)
