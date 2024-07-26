@@ -42,6 +42,14 @@ trait InteractsWithIndex
         return $this->resolveClient()->deleteByQuery($this->indexName(), $dsl);
     }
 
+    /**
+     * @see SearchIndex::termvectors()
+     */
+    public function termvectors(array $dsl): array|Promise
+    {
+        return $this->resolveClient()->termvectors($this->indexName(), $dsl);
+    }
+
     public function isCreated(): bool|Promise
     {
         return $this->resolveClient()->indicesExists($this->indexName());
