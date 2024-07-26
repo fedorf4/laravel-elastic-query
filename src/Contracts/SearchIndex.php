@@ -39,7 +39,6 @@ interface SearchIndex
      */
     public function deleteByQuery(array $dsl): array;
 
-
     /**
      * Retrieves information and statistics for terms in the fields of a particular document.
      *
