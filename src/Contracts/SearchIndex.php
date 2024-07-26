@@ -29,4 +29,12 @@ interface SearchIndex
      * @return array|Promise
      */
     public function deleteByQuery(array $dsl): array|Promise;
+
+    /**
+     * Retrieves information and statistics for terms in the fields of a particular document.
+     *
+     * @param array $dsl
+     * @return array|Promise
+     */
+    public function termvectors(array $dsl): array|Promise;
 }
