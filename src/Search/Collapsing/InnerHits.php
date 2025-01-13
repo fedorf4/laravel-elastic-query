@@ -4,6 +4,7 @@ namespace Ensi\LaravelElasticQuery\Search\Collapsing;
 
 use Ensi\LaravelElasticQuery\Contracts\DSLAware;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
+use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
 use Webmozart\Assert\Assert;
 
 class InnerHits implements DSLAware
