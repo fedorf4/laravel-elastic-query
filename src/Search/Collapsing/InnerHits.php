@@ -11,8 +11,7 @@ class InnerHits implements DSLAware
     public function __construct(
         protected string $name,
         protected int $size,
-        protected ?Sort $sort,
-        protected array $sorts = [],
+        protected Sort|SortCollection|null $sort,
     ) {
         Assert::stringNotEmpty(trim($name));
     }
@@ -26,13 +25,6 @@ class InnerHits implements DSLAware
 
         if ($this->sort) {
             $dsl['sort'] = $this->sort->toDSL();
-        }
-
-        if ($this->sorts) {
-            $dsl['sort'] = [];
-            foreach ($this->sorts as $sort) {
-                $dsl['sort'][] = $sort->toDSL();
-            }
         }
 
         return $dsl;
