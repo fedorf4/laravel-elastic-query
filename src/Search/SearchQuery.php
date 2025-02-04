@@ -198,10 +198,10 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     //endregion
 
     //region Customization
-    public function sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null): static
+    public function sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null, ?string $unmappedType = null): static
     {
         (new SortBuilder($this->sorts))
-            ->sortBy($field, $order, $mode, $missingValues);
+            ->sortBy($field, $order, $mode, $missingValues, $unmappedType);
 
         return $this;
     }
