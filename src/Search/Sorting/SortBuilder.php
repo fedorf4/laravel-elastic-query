@@ -28,7 +28,7 @@ class SortBuilder implements SortableQuery
         $this->levels = new Collection();
     }
 
-    public function sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null): static
+    public function sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null, ?string $unmappedType = null): static
     {
         $path = $this->absolutePath($field);
 
@@ -37,7 +37,8 @@ class SortBuilder implements SortableQuery
             strtolower($order),
             $mode === null ? $mode : strtolower($mode),
             $this->buildNested(),
-            $missingValues
+            $missingValues,
+            $unmappedType
         );
 
         $this->sorts->add($sort);
