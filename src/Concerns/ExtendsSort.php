@@ -9,7 +9,7 @@ use Ensi\LaravelElasticQuery\Scripts\Script;
 /**
  * @psalm-require-implements \Ensi\LaravelElasticQuery\Contracts\SortableQuery
  *
- * @method static sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null)
+ * @method static sortBy(string $field, string $order = SortOrder::ASC, ?string $mode = null, ?string $missingValues = null, ?string $unmappedType = null)
  */
 trait ExtendsSort
 {
