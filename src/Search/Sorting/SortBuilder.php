@@ -38,7 +38,7 @@ class SortBuilder implements SortableQuery
             $mode === null ? $mode : strtolower($mode),
             $this->buildNested(),
             $missingValues,
-            $unmappedType
+            unmappedType: $unmappedType
         );
 
         $this->sorts->add($sort);
