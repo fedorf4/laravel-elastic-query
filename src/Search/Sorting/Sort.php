@@ -19,6 +19,7 @@ class Sort implements DSLAware
         private ?string $missingValues = null,
         private ?string $type = null,
         private ?Script $script = null,
+        private ?string $unmappedType = null,
     ) {
         Assert::stringNotEmpty(trim($field));
         Assert::oneOf($order, SortOrder::cases());
@@ -52,6 +53,10 @@ class Sort implements DSLAware
 
         if ($this->script !== null) {
             $details['script'] = $this->script->toDSL();
+        }
+
+        if ($this->unmappedType !== null) {
+            $details['unmapped_type'] = $this->unmappedType;
         }
 
         if (!$details) {
