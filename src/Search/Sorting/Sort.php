@@ -50,19 +50,17 @@ class Sort implements DSLAware
             $details['type'] = $this->type;
         }
 
+        if ($this->script !== null) {
+            $details['script'] = $this->script->toDSL();
+        }
+
         if (!$details) {
             return [$this->field => $this->order];
         }
 
         $details['order'] = $this->order;
 
-        if ($this->script !== null) {
-            $details['script'] = $this->script->toDSL();
-
-            return ['_script' => $details];
-        }
-
-        return [$this->field => $details];
+        return [$this->script !== null ? '_script' : $this->field  => $details];
     }
 
     public function __toString(): string
