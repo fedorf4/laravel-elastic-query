@@ -65,7 +65,7 @@ class Sort implements DSLAware
 
         $details['order'] = $this->order;
 
-        return [$this->field => $details];
+        return [$this->script !== null ? '_script' : $this->field => $details];
     }
 
     public function __toString(): string
