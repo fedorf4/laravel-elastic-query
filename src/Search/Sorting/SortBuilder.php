@@ -48,7 +48,7 @@ class SortBuilder implements SortableQuery
     public function sortByScript(Script $script, string $type = ScriptSortType::NUMBER, string $order = SortOrder::ASC): static
     {
         $sort = new Sort(
-            field: '_script',
+            field: '_script' . md5(json_encode($script->toDSL()),
             order: $order,
             type: $type,
             script: $script,
