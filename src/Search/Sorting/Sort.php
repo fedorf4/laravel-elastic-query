@@ -51,6 +51,7 @@ class Sort implements DSLAware
         }
 
         if ($this->script !== null) {
+            $this->field = '_script';
             $details['script'] = $this->script->toDSL();
         }
 
