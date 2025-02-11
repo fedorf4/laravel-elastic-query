@@ -47,7 +47,8 @@ interface BoolQuery
 
     /**
      * @param array<FunctionScoreItem> $functions
+     * @param ?DSLAware $query
      * @param ?FunctionScoreOptions $options
      */
-    public function addFunctionScore(array $functions, ?FunctionScoreOptions $options = null): static;
+    public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static;
 }

@@ -3,6 +3,7 @@
 namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
 
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Ensi\LaravelElasticQuery\Contracts\DSLAware;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use stdClass;
@@ -16,6 +17,7 @@ class FunctionScore implements Criteria
      */
     public function __construct(
         private array $functions,
+        private ?DSLAware $query = null,
         private ?FunctionScoreOptions $options = null,
     ) {
         array_map(fn ($function) => Assert::isInstanceOfAny($function, [FunctionScoreItem::class]), $functions);
@@ -24,7 +26,7 @@ class FunctionScore implements Criteria
     public function toDSL(): array
     {
         $body = [
-            'query' => ['match_all' => new stdClass()],
+            'query' => $this->query?->toDSL() ?? ['match_all' => new stdClass()],
             'functions' => array_map(fn (FunctionScoreItem $function) => $function->toArray(), $this->functions),
         ];
 

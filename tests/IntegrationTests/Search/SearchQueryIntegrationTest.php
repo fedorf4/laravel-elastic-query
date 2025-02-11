@@ -128,7 +128,7 @@ test('search query more like this', function (array $fields, MoreLikeThis $likeT
         ->whereMoreLikeThis(
             $fields,
             $likeThis,
-            MoreLikeOptions::make(
+            options: MoreLikeOptions::make(
                 minTermFreq: 1,
                 minDocFreq: 1,
             )
@@ -158,7 +158,7 @@ test('search query add function score', function () {
                     ),
                 ),
             ],
-            FunctionScoreOptions::make(
+            options: FunctionScoreOptions::make(
                 scoreMode: ScoreMode::SUM,
                 boostMode: BoostMode::SUM
             )

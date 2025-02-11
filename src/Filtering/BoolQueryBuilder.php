@@ -6,6 +6,7 @@ use Closure;
 use Ensi\LaravelElasticQuery\Concerns\SupportsPath;
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Ensi\LaravelElasticQuery\Contracts\DSLAware;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
@@ -260,11 +261,12 @@ class BoolQueryBuilder implements BoolQuery, Criteria
 
     /**
      * @param array<FunctionScoreItem> $functions
+     * @param ?DSLAware $query
      * @param ?FunctionScoreOptions $options
      */
-    public function addFunctionScore(array $functions, ?FunctionScoreOptions $options = null): static
+    public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static
     {
-        $this->should->add(new FunctionScore($functions, $options));
+        $this->should->add(new FunctionScore($functions, $query, $options));
 
         return $this;
     }
