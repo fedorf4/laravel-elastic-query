@@ -4,7 +4,6 @@ namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
 
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
-use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLikeThis;
 use Webmozart\Assert\Assert;
 
 class MoreLike implements Criteria

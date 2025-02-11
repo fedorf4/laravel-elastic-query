@@ -4,7 +4,6 @@ namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
 
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
-use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScoreItem;
 use stdClass;
 use Webmozart\Assert\Assert;
 
