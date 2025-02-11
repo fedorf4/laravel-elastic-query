@@ -1,10 +1,10 @@
 <?php
 
-namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
+namespace Ensi\LaravelElasticQuery\Contracts;
 
-use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Illuminate\Contracts\Support\Arrayable;
 
-class FunctionScoreItem implements Criteria
+class FunctionScoreItem implements Arrayable
 {
     public function __construct(
         private int $weight,
@@ -12,7 +12,7 @@ class FunctionScoreItem implements Criteria
     ) {
     }
 
-    public function toDSL(): array
+    public function toArray(): array
     {
         return [
             'weight' => $this->weight,

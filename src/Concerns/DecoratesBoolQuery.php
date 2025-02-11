@@ -3,14 +3,14 @@
 namespace Ensi\LaravelElasticQuery\Concerns;
 
 use Closure;
+use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
 use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\WildcardOptions;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
-use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScoreItem;
-use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLikeThis;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Traits\ForwardsCalls;
 

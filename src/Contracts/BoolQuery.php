@@ -42,4 +42,12 @@ interface BoolQuery
     public function orWhereWildcard(string $field, string $query, ?WildcardOptions $options = null): static;
 
     public function addMustBool(callable $fn): static;
+
+    public function whereMoreLikeThis(array $fields, MoreLikeThis $likeThis, ?MoreLikeOptions $options = null): static;
+
+    /**
+     * @param array<FunctionScoreItem> $functions
+     * @param ?FunctionScoreOptions $options
+     */
+    public function addFunctionScore(array $functions, ?FunctionScoreOptions $options = null): static;
 }

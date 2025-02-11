@@ -4,7 +4,7 @@ namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
 
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
-use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLikeThis;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
 use Webmozart\Assert\Assert;
 
 class MoreLike implements Criteria
@@ -22,7 +22,7 @@ class MoreLike implements Criteria
     {
         $body = [
             'fields' => $this->fields,
-            'like' => $this->likeThis->toDSL(),
+            'like' => $this->likeThis->toArray(),
         ];
 
         if ($this->options) {

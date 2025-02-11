@@ -1,14 +1,23 @@
 <?php
 
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
+use Ensi\LaravelElasticQuery\Contracts\BoostMode;
+use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
+use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
+use Ensi\LaravelElasticQuery\Contracts\ScoreMode;
 use Ensi\LaravelElasticQuery\Contracts\SortableQuery;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\Terms;
 use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTests\Search\TestCases\SearchIntegrationTestCase;
 
 use function PHPUnit\Framework\assertArrayNotHasKey;
+use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertEqualsCanonicalizing;
 
 uses(SearchIntegrationTestCase::class);
 
@@ -110,4 +119,54 @@ test('search query collapse', function () {
     $result = ProductsIndex::query()->collapse('vat')->get();
 
     assertCount(2, $result);
+});
+
+test('search query more like this', function (array $fields, MoreLikeThis $likeThis, array $expectedIds) {
+    /** @var SearchIntegrationTestCase $this */
+
+    $result = ProductsIndex::query()
+        ->whereMoreLikeThis(
+            $fields,
+            $likeThis,
+            MoreLikeOptions::make(
+                minTermFreq: 1,
+                minDocFreq: 1,
+            )
+        )
+        ->get();
+
+    assertEqualsCanonicalizing($expectedIds, $result->pluck('_id')->all());
+})->with([
+    'array id' => [['tags'], (new MoreLikeThis())->addId('405'), ['150']],
+    'array string' => [['tags'], (new MoreLikeThis())->addString('drinks'), ['150', '405']],
+    'full text id' => [['description'], (new MoreLikeThis())->addId('1'), ['150', '328', '471']],
+    'full text string' => [['description'], (new MoreLikeThis())->addString('description'), ['1', '150', '471']],
+    'full text combine' => [['description'], (new MoreLikeThis())->addId('1')->addString('water'), ['150', '328', '405', '471']],
+]);
+
+test('search query add function score', function () {
+    /** @var SearchIntegrationTestCase $this */
+
+    $result = ProductsIndex::query()
+        ->addFunctionScore(
+            [
+                new FunctionScoreItem(
+                    weight: 10,
+                    filter: new Terms(
+                        field: "tags",
+                        values: ["drinks"],
+                    ),
+                ),
+            ],
+            FunctionScoreOptions::make(
+                scoreMode: ScoreMode::SUM,
+                boostMode: BoostMode::SUM
+            )
+        )
+        ->get();
+
+    assertCount(6, $result);
+
+    assertContains('drinks', $result[0]['_source']['tags']);
+    assertContains('drinks', $result[1]['_source']['tags']);
 });

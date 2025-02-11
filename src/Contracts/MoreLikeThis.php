@@ -1,10 +1,10 @@
 <?php
 
-namespace Ensi\LaravelElasticQuery\Filtering\Criterias;
+namespace Ensi\LaravelElasticQuery\Contracts;
 
-use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Illuminate\Contracts\Support\Arrayable;
 
-class MoreLikeThis implements Criteria
+class MoreLikeThis implements Arrayable
 {
     private array $this = [];
 
@@ -25,7 +25,7 @@ class MoreLikeThis implements Criteria
         return $this;
     }
 
-    public function toDSL(): array
+    public function toArray(): array
     {
         return $this->this;
     }

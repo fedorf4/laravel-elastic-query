@@ -15,8 +15,8 @@ class FunctionScoreOptions implements Arrayable
         ?string $scoreMode = null,
         ?string $boostMode = null,
     ): static {
-        Assert::oneOf($scoreMode, ScoreMode::cases());
-        Assert::oneOf($boostMode, BoostMode::cases());
+        Assert::nullOrOneOf($scoreMode, ScoreMode::cases());
+        Assert::nullOrOneOf($boostMode, BoostMode::cases());
 
         return new static(array_filter([
             'score_mode' => $scoreMode,
