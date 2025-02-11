@@ -3,10 +3,14 @@
 namespace Ensi\LaravelElasticQuery\Concerns;
 
 use Closure;
+use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\WildcardOptions;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScoreItem;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLikeThis;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Traits\ForwardsCalls;
 
@@ -136,6 +140,24 @@ trait DecoratesBoolQuery
     }
 
     public function addMustBool(callable $fn): static
+    {
+        $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
+
+        return $this;
+    }
+
+    public function whereMoreLikeThis(array $fields, MoreLikeThis $likeThis, ?MoreLikeOptions $options = null): static
+    {
+        $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
+
+        return $this;
+    }
+
+    /**
+     * @param array<FunctionScoreItem> $functions
+     * @param ?FunctionScoreOptions $options
+     */
+    public function addFunctionScore(array $functions, ?FunctionScoreOptions $options = null): static
     {
         $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
 

@@ -6,10 +6,16 @@ use Closure;
 use Ensi\LaravelElasticQuery\Concerns\SupportsPath;
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
+use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\WildcardOptions;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScoreItem;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLikeThis;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Exists;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScore;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLike;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\MultiMatch;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Nested;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\OneMatch;
@@ -243,6 +249,24 @@ class BoolQueryBuilder implements BoolQuery, Criteria
     protected function makeWildcard(string $field, string $query, ?WildcardOptions $options = null): Wildcard
     {
         return new Wildcard($this->absolutePath($field), $query, $options ?: new WildcardOptions());
+    }
+
+    public function whereMoreLikeThis(array $fields, MoreLikeThis $likeThis, ?MoreLikeOptions $options = null): static
+    {
+        $this->must->add(new MoreLike($fields, $likeThis, $options));
+
+        return $this;
+    }
+
+    /**
+     * @param array<FunctionScoreItem> $functions
+     * @param ?FunctionScoreOptions $options
+     */
+    public function addFunctionScore(array $functions, ?FunctionScoreOptions $options = null): static
+    {
+        $this->should->add(new FunctionScore($functions, $options));
+
+        return $this;
     }
 
     public function addMustBool(callable $fn): static
