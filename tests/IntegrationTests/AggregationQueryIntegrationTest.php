@@ -2,6 +2,7 @@
 
 use Ensi\LaravelElasticQuery\Aggregating\Bucket;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\TopHitsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\MinMax;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
@@ -51,6 +52,35 @@ test('aggregation query composite', function () {
         ['voda-san-pellegrino-mineralnaya-gazirovannaya', 'water'],
         $results->get('codes')->pluck('key')->all()
     );
+});
+
+test('aggregation query top hits', function () {
+    /** @var IntegrationTestCase $this */
+
+    $results = ProductsIndex::aggregate()
+        ->terms(
+            name: 'group_by',
+            field: 'active',
+            composite: new TopHitsAggregation(
+                'top_products',
+                size: 10
+            )
+        )
+        ->get();
+
+    $results = $results->get('group_by');
+
+    /** @var Bucket $result */
+    foreach ($results as $result) {
+        $groupByKey = $result->key;
+        /** @var array $products */
+        $products = $result->getCompositeValue('top_products');
+
+        array_walk($products, fn ($hit) => assertEquals($groupByKey, data_get($hit, '_source.active')));
+        $productIds = array_map(fn ($hit) => data_get($hit, '_source.product_id'), $products);
+
+        assertEqualsCanonicalizing($groupByKey ? [1, 150, 328, 405, 471] : [319], $productIds);
+    }
 });
 
 test('aggregation query cardinality', function () {
