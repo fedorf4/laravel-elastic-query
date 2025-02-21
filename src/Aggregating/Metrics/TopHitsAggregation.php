@@ -12,7 +12,8 @@ class TopHitsAggregation implements Aggregation
     public function __construct(
         private string $name,
         private ?int $size = null,
-        protected ?SortCollection $sort = null,
+        private array $source = [],
+        private ?SortCollection $sort = null,
     ) {
         Assert::stringNotEmpty(trim($name));
         Assert::nullOrGreaterThan($this->size, 0);
@@ -38,6 +39,9 @@ class TopHitsAggregation implements Aggregation
 
         if ($this->sort) {
             $body['sort'] = $this->sort->toDSL();
+        }
+        if (!empty($this->source)) {
+            $body['_source'] = $this->source;
         }
 
         return [
