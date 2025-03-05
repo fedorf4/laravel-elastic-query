@@ -14,6 +14,11 @@ class Result
         return new Bucket(self::parse($source, 'key'), (int)($source['doc_count'] ?? 0), $compositeValues);
     }
 
+    public static function parseBucketWithKey(mixed $key, array $source, array $compositeValues = []): Bucket
+    {
+        return new Bucket($key, (int)($source['doc_count'] ?? 0), $compositeValues);
+    }
+
     public static function parse(array $source, string $key): mixed
     {
         $stringValue = $source["{$key}_as_string"] ?? null;
