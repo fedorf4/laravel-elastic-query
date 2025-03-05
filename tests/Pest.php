@@ -1,5 +1,7 @@
 <?php
 
+use Ensi\LaravelElasticQuery\Aggregating\Bucket;
+use Illuminate\Support\Collection;
 use Illuminate\Testing\AssertableJsonString;
 
 /*
@@ -58,3 +60,13 @@ function makeAssertableArray(array $source): AssertableJsonString
 {
     return new AssertableJsonString($source);
 }
+
+function extractBucketValues(Collection $result, string $bucketName, string $aggregationName, string $key): array
+{
+    /** @var Bucket $bucket */
+    $bucket = $result->get($bucketName);
+
+    $hits = $bucket->getCompositeValue($aggregationName);
+
+    return array_map(fn (array $hit) => $hit['_source'][$key], $hits);
+};
