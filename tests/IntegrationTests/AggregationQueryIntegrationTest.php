@@ -163,18 +163,18 @@ test('aggregation query filters', function (?string $defaultBucket) {
 
     assertEqualsCanonicalizing(
         [1, 328],
-        extractBacketValues($results, 'filter_tags', $topHits->name(), 'product_id')
+        extractBucketValues($results, 'filter_tags', $topHits->name(), 'product_id')
     );
 
     assertEqualsCanonicalizing(
         [1, 150, 405],
-        extractBacketValues($results, 'filter_rating', $topHits->name(), 'product_id')
+        extractBucketValues($results, 'filter_rating', $topHits->name(), 'product_id')
     );
 
     if ($defaultBucket != null) {
         assertEqualsCanonicalizing(
             [319, 471],
-            extractBacketValues($results, $defaultBucket, $topHits->name(), 'product_id')
+            extractBucketValues($results, $defaultBucket, $topHits->name(), 'product_id')
         );
     }
 })->with([null, 'default_bucket']);

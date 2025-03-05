@@ -61,7 +61,7 @@ function makeAssertableArray(array $source): AssertableJsonString
     return new AssertableJsonString($source);
 }
 
-function extractBacketValues(Collection $result, string $bucketName, string $aggregationName, string $key): array
+function extractBucketValues(Collection $result, string $bucketName, string $aggregationName, string $key): array
 {
     /** @var Bucket $bucket */
     $bucket = $result->get($bucketName);
