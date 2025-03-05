@@ -1,10 +1,13 @@
 <?php
 
 use Ensi\LaravelElasticQuery\Aggregating\Bucket;
+use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\TopHitsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\MinMax;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\RangeBound;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\Term;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
 use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
@@ -139,3 +142,40 @@ test('aggregation query terms with sortBy composite value', function () {
     assertCount(2, $results->get('codes'));
     assertGreaterThanOrEqual($scores->first(), $scores->last());
 });
+
+
+test('aggregation query filters', function (?string $defaultBucket) {
+    /** @var IntegrationTestCase $this */
+
+    $filters = new FiltersCollection();
+    $filters->add('filter_tags', new Term('tags', 'video'));
+    $filters->add('filter_rating', new RangeBound('rating', '>=', 7));
+
+    $topHits = new TopHitsAggregation('top_hits');
+
+    $results = ProductsIndex::aggregate()
+        ->filters('group_by_filters', $filters, $topHits, otherBucketKey: $defaultBucket)
+        ->get()
+        ->get('group_by_filters')
+        ->keyBy(fn (Bucket $bucket) => $bucket->key);
+
+    $additionResult = $defaultBucket !== null ? 1 : 0;
+    assertCount($filters->count() + $additionResult, $results);
+
+    assertEqualsCanonicalizing(
+        [1, 328],
+        extractBucketValues($results, 'filter_tags', $topHits->name(), 'product_id')
+    );
+
+    assertEqualsCanonicalizing(
+        [1, 150, 405],
+        extractBucketValues($results, 'filter_rating', $topHits->name(), 'product_id')
+    );
+
+    if ($defaultBucket != null) {
+        assertEqualsCanonicalizing(
+            [319, 471],
+            extractBucketValues($results, $defaultBucket, $topHits->name(), 'product_id')
+        );
+    }
+})->with([null, 'default_bucket']);

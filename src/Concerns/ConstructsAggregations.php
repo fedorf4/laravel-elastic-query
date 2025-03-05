@@ -5,9 +5,11 @@ namespace Ensi\LaravelElasticQuery\Concerns;
 use Closure;
 use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\FilterAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Bucket\FiltersAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\NestedAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\TermsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\CompositeAggregationBuilder;
+use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\CardinalityAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ValueCountAggregation;
@@ -39,6 +41,17 @@ trait ConstructsAggregations
     public function filter(string $name, Criteria $criteria, AggregationCollection $children): static
     {
         $this->aggregations->add(new FilterAggregation($name, $criteria, $children));
+
+        return $this;
+    }
+
+    public function filters(
+        string $name,
+        FiltersCollection $filters,
+        ?Aggregation $composite = null,
+        ?string $otherBucketKey = null,
+    ): static {
+        $this->aggregations->add(new FiltersAggregation($name, $filters, $composite, $otherBucketKey));
 
         return $this;
     }
