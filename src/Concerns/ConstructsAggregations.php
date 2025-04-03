@@ -11,12 +11,15 @@ use Ensi\LaravelElasticQuery\Aggregating\Bucket\TermsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\CompositeAggregationBuilder;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\CardinalityAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\MaxAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ValueCountAggregation;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
+use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
 
 trait ConstructsAggregations
 {
@@ -30,8 +33,8 @@ trait ConstructsAggregations
         string $name,
         string $field,
         ?int $size = null,
-        ?Sort $sort = null,
-        ?Aggregation $composite = null,
+        Sort|SortCollection|null $sort = null,
+        Aggregation|AggregationCollection|null $composite = null,
     ): static {
         $this->aggregations->add(new TermsAggregation($name, $this->absolutePath($field), $size, $sort, $composite));
 
@@ -48,7 +51,7 @@ trait ConstructsAggregations
     public function filters(
         string $name,
         FiltersCollection $filters,
-        ?Aggregation $composite = null,
+        Aggregation|AggregationCollection|null $composite = null,
         ?string $otherBucketKey = null,
     ): static {
         $this->aggregations->add(new FiltersAggregation($name, $filters, $composite, $otherBucketKey));
@@ -59,6 +62,20 @@ trait ConstructsAggregations
     public function minmax(string $name, string $field): static
     {
         $this->aggregations->add(new MinMaxAggregation($name, $this->absolutePath($field)));
+
+        return $this;
+    }
+
+    public function min(string $name, string $field, mixed $missing = null): static
+    {
+        $this->aggregations->add(new MinAggregation($name, $this->absolutePath($field), $missing));
+
+        return $this;
+    }
+
+    public function max(string $name, string $field, mixed $missing = null): static
+    {
+        $this->aggregations->add(new MaxAggregation($name, $this->absolutePath($field), $missing));
 
         return $this;
     }

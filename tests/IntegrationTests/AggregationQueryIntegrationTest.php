@@ -28,7 +28,11 @@ test('aggregation query get', function () {
         ->count('product_count', 'product_id')
         ->nested(
             'offers',
-            fn (AggregationsBuilder $builder) => $builder->where('seller_id', 10)->minmax('price', 'price')
+            fn (AggregationsBuilder $builder) => $builder
+                ->where('seller_id', 10)
+                ->minmax('price', 'price')
+                ->min('min_price', 'price')
+                ->max('max_price', 'price')
         )
         ->get();
 
@@ -38,6 +42,9 @@ test('aggregation query get', function () {
     );
 
     assertEquals(new MinMax(168.0, 611.0), $results->get('price'));
+    assertEquals(168.0, $results->get('min_price'));
+    assertEquals(611.0, $results->get('max_price'));
+
     assertEquals(2, $results->get('product_count'));
 });
 
