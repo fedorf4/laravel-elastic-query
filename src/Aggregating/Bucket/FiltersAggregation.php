@@ -2,10 +2,12 @@
 
 namespace Ensi\LaravelElasticQuery\Aggregating\Bucket;
 
+use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\BucketCollection;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Result;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
+use Illuminate\Support\Collection;
 use Webmozart\Assert\Assert;
 
 class FiltersAggregation implements Aggregation
@@ -13,7 +15,7 @@ class FiltersAggregation implements Aggregation
     public function __construct(
         private string $name,
         private FiltersCollection $filters,
-        private ?Aggregation $composite = null,
+        private Aggregation|AggregationCollection|null $composite = null,
         private ?string $otherBucketKey = null,
     ) {
         Assert::stringNotEmpty(trim($name));
@@ -45,6 +47,7 @@ class FiltersAggregation implements Aggregation
         $buckets = array_map(
             function (mixed $key, array $bucket) {
                 $values = $this->isComposite() ? $this->composite->parseResults($bucket) : [];
+                $values = $values instanceof Collection ? $values->toArray() : $values;
 
                 return Result::parseBucketWithKey($key, $bucket, $values);
             },
