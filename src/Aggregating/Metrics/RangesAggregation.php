@@ -37,8 +37,8 @@ class RangesAggregation implements Aggregation
                 "range" => [
                     "field" => $this->field,
                     "ranges" => $this->ranges,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
