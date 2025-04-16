@@ -107,15 +107,25 @@ test('aggregation query cardinality', function () {
 test('aggregation query ranges', function () {
     /** @var IntegrationTestCase $this */
 
-    $rangeFromTo = new Range(from: 0, to: 7, key: 'from-0-to-6');
-    $rangeFrom = new Range(from: 7, key: 'from-0-to-6');
-    $rangeTo = new Range(to: 7, key: 'from-0-to-6');
+    $rangeFromTo = new Range(from: 0, to: 5, key: 'from-0-to-5');
+    $rangeFrom = new Range(from: 7, key: 'from-7');
+    $rangeTo = new Range(to: 8, key: 'to-8');
 
     $results = ProductsIndex::aggregate()
         ->ranges('ranges', 'rating', [$rangeFromTo, $rangeFrom, $rangeTo])
         ->get();
 
-    # todo
+    /** @var Bucket $result */
+    foreach ($results as $result) {
+        $expected = match ($result->key) {
+            'from-0-to-5' => 2,
+            'from-7' => 3,
+            'to-8' => 4,
+            default => null,
+        };
+
+        assertEquals($expected, $result->count);
+    }
 });
 
 test('aggregation query count all', function () {
