@@ -5,6 +5,7 @@ use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\TopHitsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\MinMax;
+use Ensi\LaravelElasticQuery\Aggregating\Range;
 use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\RangeBound;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Term;
@@ -101,6 +102,30 @@ test('aggregation query cardinality', function () {
         ->get();
 
     assertEquals(2, $results->get('cardinality'));
+});
+
+test('aggregation query ranges', function () {
+    /** @var IntegrationTestCase $this */
+
+    $rangeFromTo = new Range(from: 0, to: 5, key: 'from-0-to-5');
+    $rangeFrom = new Range(from: 7, key: 'from-7');
+    $rangeTo = new Range(to: 8, key: 'to-8');
+
+    $results = ProductsIndex::aggregate()
+        ->ranges('ranges', 'rating', [$rangeFromTo, $rangeFrom, $rangeTo])
+        ->get();
+
+    /** @var Bucket $result */
+    foreach ($results as $result) {
+        $expected = match ($result->key) {
+            'from-0-to-5' => 2,
+            'from-7' => 3,
+            'to-8' => 4,
+            default => null,
+        };
+
+        assertEquals($expected, $result->count);
+    }
 });
 
 test('aggregation query count all', function () {
