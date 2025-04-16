@@ -2,18 +2,23 @@
 
 namespace Ensi\LaravelElasticQuery\Aggregating\Metrics;
 
+use Ensi\LaravelElasticQuery\Aggregating\Range;
 use Ensi\LaravelElasticQuery\Aggregating\Result;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
 use Webmozart\Assert\Assert;
 
 class RangesAggregation implements Aggregation
 {
-    protected array $ranges = [];
-
-    public function __construct(protected string $name, protected string $field)
+    /**
+     * @param string $name
+     * @param string $field
+     * @param Range[] $ranges
+     */
+    public function __construct(protected string $name, protected string $field, protected array $ranges)
     {
         Assert::stringNotEmpty(trim($name));
         Assert::stringNotEmpty(trim($field));
+        Assert::allIsInstanceOf($ranges, Range::class);
     }
 
     public function name(): string
@@ -21,9 +26,11 @@ class RangesAggregation implements Aggregation
         return $this->name;
     }
 
-    public function add(int|float|null $from = null, int|float|null $to = null, ?string $key = null): void
+    public function add(Range $range): self
     {
-        $this->ranges[] = array_filter(["from" => $from, "to" => $to, "key" => $key]);
+        $this->ranges[] = $range;
+
+        return $this;
     }
 
     public function toDSL(): array
@@ -36,7 +43,7 @@ class RangesAggregation implements Aggregation
             $this->name => [
                 "range" => [
                     "field" => $this->field,
-                    "ranges" => $this->ranges,
+                    "ranges" => array_map(fn (Range $range) => $range->toDSL(), $this->ranges),
                 ],
             ],
         ];
