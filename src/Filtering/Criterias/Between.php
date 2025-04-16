@@ -14,6 +14,6 @@ class Between implements Criteria
 
     public function toDSL(): array
     {
-        return ['range' => [$this->field => ['gte' => $this->from, 'lt' => $this->to]]];
+        return ['range' => [$this->field => ['gte' => $this->from, 'lte' => $this->to]]];
     }
 }
