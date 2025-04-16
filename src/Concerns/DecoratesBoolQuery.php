@@ -154,6 +154,13 @@ trait DecoratesBoolQuery
         return $this;
     }
 
+    public function whereBetween(string $field, mixed $from, mixed $to): static
+    {
+        $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
+
+        return $this;
+    }
+
     /**
      * @param array<FunctionScoreItem> $functions
      * @param ?DSLAware $query

@@ -45,6 +45,8 @@ interface BoolQuery
 
     public function whereMoreLikeThis(array $fields, MoreLikeThis $likeThis, ?MoreLikeOptions $options = null): static;
 
+    public function whereBetween(string $field, mixed $from, mixed $to): static;
+
     /**
      * @param array<FunctionScoreItem> $functions
      * @param ?DSLAware $query

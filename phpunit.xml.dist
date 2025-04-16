@@ -18,6 +18,6 @@
         <junit outputFile="build/report.junit.xml"/>
     </logging>
     <php>
-        <env name="ELASTICSEARCH_HOSTS" value="http://elastic.ensi.127.0.0.1.nip.io:9200"/>
+        <env name="ELASTICSEARCH_HOSTS" value="http://elastic.ensi-cloud.127.0.0.1.nip.io:9200"/>
     </php>
 </phpunit>

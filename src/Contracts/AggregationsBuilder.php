@@ -3,12 +3,21 @@
 namespace Ensi\LaravelElasticQuery\Contracts;
 
 use Closure;
+use Ensi\LaravelElasticQuery\Aggregating\Range;
 
 interface AggregationsBuilder extends BoolQuery
 {
     public function terms(string $name, string $field, ?int $size = null): static;
 
     public function minmax(string $name, string $field): static;
+
+    /**
+     * @param string $name
+     * @param string $field
+     * @param Range[] $ranges
+     * @return $this
+     */
+    public function ranges(string $name, string $field, array $ranges): static;
 
     public function min(string $name, string $field, mixed $missing = null): static;
 

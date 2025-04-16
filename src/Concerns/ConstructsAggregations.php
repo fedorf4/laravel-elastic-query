@@ -14,6 +14,7 @@ use Ensi\LaravelElasticQuery\Aggregating\Metrics\CardinalityAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MaxAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\RangesAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ValueCountAggregation;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
@@ -83,6 +84,13 @@ trait ConstructsAggregations
     public function count(string $name, string $field): static
     {
         $this->aggregations->add(new ValueCountAggregation($name, $this->absolutePath($field)));
+
+        return $this;
+    }
+
+    public function ranges(string $name, string $field, array $ranges): static
+    {
+        $this->aggregations->add(new RangesAggregation($name, $this->absolutePath($field), $ranges));
 
         return $this;
     }
