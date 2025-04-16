@@ -57,7 +57,7 @@ test('filtering search query whereNull', function () {
 test('filtering search query whereBetween', function () {
     /** @var SearchIntegrationTestCase $this */
 
-    $query = ProductsIndex::query()->whereBetween(field: 'rating', from: 2, to: 9);
+    $query = ProductsIndex::query()->whereBetween(field: 'rating', from: 2, to: 8);
 
     $this->assertDocumentIds($query, [471, 328, 1, 405]);
 });
