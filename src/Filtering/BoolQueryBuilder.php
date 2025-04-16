@@ -14,6 +14,7 @@ use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\WildcardOptions;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\Between;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Exists;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScore;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLike;
@@ -255,6 +256,13 @@ class BoolQueryBuilder implements BoolQuery, Criteria
     public function whereMoreLikeThis(array $fields, MoreLikeThis $likeThis, ?MoreLikeOptions $options = null): static
     {
         $this->must->add(new MoreLike($fields, $likeThis, $options));
+
+        return $this;
+    }
+
+    public function whereBetween(string $field, mixed $from, mixed $to): static
+    {
+        $this->filter->add(new Between($this->absolutePath($field), $from, $to));
 
         return $this;
     }

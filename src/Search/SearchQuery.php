@@ -30,6 +30,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     use ExtendsSort;
 
     protected BoolQueryBuilder $boolQuery;
+    protected ?BoolQueryBuilder $postFilter = null;
     protected SortCollection $sorts;
     protected ?Collapse $collapse = null;
     protected ?Highlight $highlight = null;
@@ -171,6 +172,10 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
             $dsl['highlight'] = $this->highlight->toDSL();
         }
 
+        if (!is_null($this->postFilter)) {
+            $dsl['post_filter'] = $this->postFilter->toDSL();
+        }
+
         if ($cursor !== null && !$cursor->isBOF()) {
             $dsl['search_after'] = $cursor->toDSL();
         }
@@ -231,6 +236,13 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     public function highlight(Highlight $highlight): static
     {
         $this->highlight = $highlight;
+
+        return $this;
+    }
+
+    public function setPostFilter(BoolQueryBuilder $boolQueryBuilder): static
+    {
+        $this->postFilter = $boolQueryBuilder;
 
         return $this;
     }
