@@ -66,7 +66,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
     public function paginate(int $size, int $offset = 0): Page|Promise
     {
-        Assert::greaterThan($size, 0);
+        Assert::greaterThanEq($size, 0);
         Assert::greaterThanEq($offset, 0);
 
         return Response::fn(
@@ -87,7 +87,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
     public function cursorPaginate(int $size, ?string $cursor = null): CursorPage|Promise
     {
-        Assert::greaterThan($size, 0);
+        Assert::greaterThanEq($size, 0);
 
         $sorts = $this->sorts->withTiebreaker($this->index->tiebreaker());
         $current = Cursor::decode($cursor) ?? Cursor::BOF();
@@ -180,7 +180,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
             $dsl['search_after'] = $cursor->toDSL();
         }
 
-        return $this->index->search(array_filter($dsl), $this->searchType);
+        return $this->index->search(array_filter($dsl, fn (mixed $v) => !is_null($v)), $this->searchType);
     }
 
     protected function sourceToDSL(bool $source): array | bool
