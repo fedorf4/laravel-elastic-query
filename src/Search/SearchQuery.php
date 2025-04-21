@@ -62,7 +62,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
     public function paginate(int $size, int $offset = 0, ?callable $async = null): Page|FutureArray
     {
-        Assert::greaterThan($size, 0);
+        Assert::greaterThanEq($size, 0);
         Assert::greaterThanEq($offset, 0);
 
         if ($async) {
@@ -94,7 +94,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
 
     public function cursorPaginate(int $size, ?string $cursor = null): CursorPage
     {
-        Assert::greaterThan($size, 0);
+        Assert::greaterThanEq($size, 0);
 
         $sorts = $this->sorts->withTiebreaker($this->index->tiebreaker());
         $current = Cursor::decode($cursor) ?? Cursor::BOF();
@@ -180,7 +180,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
             $dsl['search_after'] = $cursor->toDSL();
         }
 
-        $dsl = array_filter($dsl);
+        $dsl = array_filter($dsl, fn (mixed $v) => !is_null($v));
 
         return $async ? $this->index->searchAsync($dsl, $this->searchType) : $this->index->search($dsl, $this->searchType);
     }
