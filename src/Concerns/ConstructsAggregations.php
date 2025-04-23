@@ -15,9 +15,11 @@ use Ensi\LaravelElasticQuery\Aggregating\Metrics\MaxAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\RangesAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\ScriptAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ValueCountAggregation;
 use Ensi\LaravelElasticQuery\Contracts\Aggregation;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
+use Ensi\LaravelElasticQuery\Contracts\ScriptLang;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
 use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
@@ -77,6 +79,18 @@ trait ConstructsAggregations
     public function max(string $name, string $field, mixed $missing = null): static
     {
         $this->aggregations->add(new MaxAggregation($name, $this->absolutePath($field), $missing));
+
+        return $this;
+    }
+
+    public function script(
+        string $name,
+        string $aggregationType,
+        string $source,
+        array $params = [],
+        string $lang = ScriptLang::PAINLESS
+    ): static {
+        $this->aggregations->add(new ScriptAggregation($name, $aggregationType, $source, $params, $lang));
 
         return $this;
     }
