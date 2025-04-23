@@ -1,8 +1,10 @@
 <?php
 
+use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\ScriptAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\TopHitsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\MinMax;
 use Ensi\LaravelElasticQuery\Aggregating\Range;
@@ -10,6 +12,7 @@ use Ensi\LaravelElasticQuery\Contracts\AggregationsBuilder;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\RangeBound;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Term;
 use Ensi\LaravelElasticQuery\Search\Sorting\Sort;
+use Ensi\LaravelElasticQuery\Search\Sorting\SortCollection;
 use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
 
@@ -211,3 +214,52 @@ test('aggregation query filters', function (?string $defaultBucket) {
         );
     }
 })->with([null, 'default_bucket']);
+
+test('aggregation query by script', function () {
+    /** @var IntegrationTestCase $this */
+    $fieldName = 'max_tag_by_script';
+
+    $sort = new SortCollection();
+    $sort->add(new Sort($fieldName));
+
+    $termAggregation = new AggregationCollection();
+    $termAggregation->add(new ScriptAggregation(
+        name: $fieldName,
+        aggregationType: 'max',
+        params: ['tag' => 'video'],
+        source: '
+          if (doc.containsKey("tags") 
+            && doc["tags"].size() > 0
+            && doc["tags"].contains(params.tag)
+            ) {
+                return 0;
+            }
+          return 1;
+        ',
+    ));
+
+    $results = ProductsIndex::aggregate()
+        ->terms(
+            name: 'group_by',
+            field: 'product_id',
+            size: 3,
+            sort: $sort,
+            composite: $termAggregation
+        )
+        ->get()
+        ->get('group_by');
+
+    $scores = $results->map(
+        fn (Bucket $bucket) => $bucket->getCompositeValue($fieldName)
+    )->toArray();
+
+    assertEqualsCanonicalizing(
+        [1, 328, 150],
+        $results->pluck('key')->toArray(),
+    );
+
+    assertEqualsCanonicalizing(
+        [0.0, 0.0, 1.0],
+        $scores,
+    );
+});
