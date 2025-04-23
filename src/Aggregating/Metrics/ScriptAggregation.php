@@ -12,8 +12,8 @@ class ScriptAggregation implements Aggregation
     public function __construct(
         private readonly string $name,
         private readonly string $aggregationType,
-        private readonly array  $params,
         private readonly string $source,
+        private readonly array  $params = [],
         private readonly string $lang = ScriptLang::PAINLESS,
     ) {
         Assert::stringNotEmpty(trim($name));
