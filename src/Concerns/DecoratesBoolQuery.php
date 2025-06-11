@@ -172,4 +172,11 @@ trait DecoratesBoolQuery
 
         return $this;
     }
+
+    public function pinned(array $ids, ?DSLAware $query = null): static
+    {
+        $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
+
+        return $this;
+    }
 }

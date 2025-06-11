@@ -53,4 +53,6 @@ interface BoolQuery
      * @param ?FunctionScoreOptions $options
      */
     public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static;
+
+    public function pinned(array $ids, ?DSLAware $query = null): static;
 }

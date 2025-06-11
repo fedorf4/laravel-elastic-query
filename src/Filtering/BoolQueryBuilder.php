@@ -21,6 +21,7 @@ use Ensi\LaravelElasticQuery\Filtering\Criterias\MoreLike;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\MultiMatch;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Nested;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\OneMatch;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\Pinned;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\RangeBound;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Term;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Terms;
@@ -275,6 +276,13 @@ class BoolQueryBuilder implements BoolQuery, Criteria
     public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static
     {
         $this->should->add(new FunctionScore($functions, $query, $options));
+
+        return $this;
+    }
+
+    public function pinned(array $ids, ?DSLAware $query = null): static
+    {
+        $this->must->add(new Pinned($ids, $query));
 
         return $this;
     }
