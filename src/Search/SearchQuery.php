@@ -39,6 +39,7 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     protected ?int $from = null;
     protected array $fields = [];
     protected array $include = [];
+    protected ?array $pinnedIds = null;
     protected array $exclude = [];
     protected ?string $searchType = null;
 
@@ -149,11 +150,18 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
         $dsl = [
             'size' => $size,
             'from' => $from,
-            'query' => $this->boolQuery->toDSL(),
+            'query' => [],
             'track_total_hits' => $totals,
             '_source' => $this->sourceToDSL($source),
             'fields' => $source && $this->fields ? $this->fields : null,
         ];
+
+        if ($this->pinnedIds) {
+            $dsl['query']['pinned']['ids'] = $this->pinnedIds;
+            $dsl['query']['pinned']['organic'] = $this->boolQuery->toDSL();
+        } else {
+            $dsl['query'] = $this->boolQuery->toDSL();
+        }
 
         $sorts ??= $this->sorts;
         if (!$sorts->isEmpty()) {
@@ -243,6 +251,13 @@ class SearchQuery implements SortableQuery, CollapsibleQuery, HighlightingQuery
     public function setPostFilter(BoolQueryBuilder $boolQueryBuilder): static
     {
         $this->postFilter = $boolQueryBuilder;
+
+        return $this;
+    }
+
+    public function pinned(array $ids): static
+    {
+        $this->pinnedIds = $ids;
 
         return $this;
     }
