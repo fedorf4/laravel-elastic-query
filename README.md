@@ -130,6 +130,14 @@ $searchQuery->sumSortBy('field', 'asc');
 $searchQuery->medianSortBy('field', 'asc');
 ```
 
+### Pinned query
+
+Promotes selected documents to rank higher than those matching a given query. This feature is typically used to guide searchers to curated documents that are promoted over and above any "organic" matches for a search. The promoted or "pinned" documents are identified using the document IDs stored in the _id field.
+
+```php
+$searchQuery->pinned(['doc-3', 'doc-1', 'doc-2']);
+```
+
 ### Pagination
 
 #### Offset Pagination
