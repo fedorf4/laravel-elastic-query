@@ -4,14 +4,13 @@ namespace Ensi\LaravelElasticQuery\Concerns;
 
 use Closure;
 use Ensi\LaravelElasticQuery\Contracts\DSLAware;
-use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
-use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
 use Ensi\LaravelElasticQuery\Contracts\MultiMatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\WildcardOptions;
 use Ensi\LaravelElasticQuery\Filtering\BoolQueryBuilder;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScore;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Traits\ForwardsCalls;
 
@@ -161,12 +160,7 @@ trait DecoratesBoolQuery
         return $this;
     }
 
-    /**
-     * @param array<FunctionScoreItem> $functions
-     * @param ?DSLAware $query
-     * @param ?FunctionScoreOptions $options
-     */
-    public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static
+    public function orFunctionScore(FunctionScore $functionScore): static
     {
         $this->forwardCallTo($this->boolQuery(), __FUNCTION__, func_get_args());
 
