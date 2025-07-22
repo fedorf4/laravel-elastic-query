@@ -8,6 +8,7 @@ use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
 use Ensi\LaravelElasticQuery\Contracts\ScoreMode;
 use Ensi\LaravelElasticQuery\Contracts\SortableQuery;
+use Ensi\LaravelElasticQuery\Filtering\Criterias\FunctionScore;
 use Ensi\LaravelElasticQuery\Filtering\Criterias\Terms;
 use Ensi\LaravelElasticQuery\Tests\Data\Models\ProductsIndex;
 use Ensi\LaravelElasticQuery\Tests\IntegrationTestCase;
@@ -148,21 +149,19 @@ test('search query add function score', function () {
     /** @var SearchIntegrationTestCase $this */
 
     $result = ProductsIndex::query()
-        ->addFunctionScore(
-            [
-                new FunctionScoreItem(
-                    weight: 10,
-                    filter: new Terms(
-                        field: "tags",
-                        values: ["drinks"],
-                    ),
-                ),
-            ],
+        ->orFunctionScore(new FunctionScore(
             options: FunctionScoreOptions::make(
                 scoreMode: ScoreMode::SUM,
                 boostMode: BoostMode::SUM
-            )
-        )
+            ),
+            functions: [new FunctionScoreItem(
+                weight: 10,
+                filter: new Terms(
+                    field: "tags",
+                    values: ["drinks"],
+                ),
+            )],
+        ))
         ->get();
 
     assertCount(6, $result);

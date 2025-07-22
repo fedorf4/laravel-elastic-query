@@ -7,8 +7,6 @@ use Ensi\LaravelElasticQuery\Concerns\SupportsPath;
 use Ensi\LaravelElasticQuery\Contracts\BoolQuery;
 use Ensi\LaravelElasticQuery\Contracts\Criteria;
 use Ensi\LaravelElasticQuery\Contracts\DSLAware;
-use Ensi\LaravelElasticQuery\Contracts\FunctionScoreItem;
-use Ensi\LaravelElasticQuery\Contracts\FunctionScoreOptions;
 use Ensi\LaravelElasticQuery\Contracts\MatchOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeOptions;
 use Ensi\LaravelElasticQuery\Contracts\MoreLikeThis;
@@ -268,14 +266,9 @@ class BoolQueryBuilder implements BoolQuery, Criteria
         return $this;
     }
 
-    /**
-     * @param array<FunctionScoreItem> $functions
-     * @param ?DSLAware $query
-     * @param ?FunctionScoreOptions $options
-     */
-    public function addFunctionScore(array $functions, ?DSLAware $query = null, ?FunctionScoreOptions $options = null): static
+    public function orFunctionScore(FunctionScore $functionScore): static
     {
-        $this->should->add(new FunctionScore($functions, $query, $options));
+        $this->should->add($functionScore);
 
         return $this;
     }
