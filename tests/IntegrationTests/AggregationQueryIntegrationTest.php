@@ -2,6 +2,7 @@
 
 use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket;
+use Ensi\LaravelElasticQuery\Aggregating\BucketCollection;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ScriptAggregation;
@@ -261,4 +262,27 @@ test('aggregation query by script', function () {
         [0.0, 0.0, 1.0],
         $scores,
     );
+});
+
+test('reverse nested aggregation query', function () {
+    /** @var IntegrationTestCase $this */
+
+    $results = ProductsIndex::aggregate()
+        ->nested('offers', function ($builder) {
+            $builder->terms('offer_prices', 'offers.price', 5)
+                ->reverseNested('root_stats', function ($reverseBuilder) {
+                    $reverseBuilder->cardinality('unique_products', 'product_id')
+                        ->count('total_products', 'product_id');
+                });
+        })
+        ->get();
+
+    $prices = $results->get('offer_prices');
+    
+    expect($prices)->toBeInstanceOf(BucketCollection::class);
+    
+    foreach ($prices as $bucket) {
+        expect($bucket->getCompositeValue('unique_products'))->toBeGreaterThan(0);
+        expect($bucket->getCompositeValue('total_products'))->toBeGreaterThan(0);
+    }
 });

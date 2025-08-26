@@ -28,4 +28,6 @@ interface AggregationsBuilder extends BoolQuery
     public function script(string $name, string $aggregationType, string $source, array $params = [], string $lang = ScriptLang::PAINLESS): static;
 
     public function nested(string $path, Closure $callback): static;
+
+    public function reverseNested(string $name, Closure $callback): static
 }
