@@ -278,9 +278,9 @@ test('reverse nested aggregation query', function () {
         ->get();
 
     $prices = $results->get('offer_prices');
-    
+
     expect($prices)->toBeInstanceOf(BucketCollection::class);
-    
+
     foreach ($prices as $bucket) {
         expect($bucket->getCompositeValue('unique_products'))->toBeGreaterThan(0);
         expect($bucket->getCompositeValue('total_products'))->toBeGreaterThan(0);

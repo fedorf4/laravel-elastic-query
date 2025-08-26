@@ -136,15 +136,15 @@ trait ConstructsAggregations
     public function reverseNested(string $name, Closure $callback): static
     {
         $builder = $this->createCompositeBuilder("{$name}_builder");
-        
+
         /** @var AggregationCollection $aggs */
         $aggs = tap($builder, $callback)->build();
-        
+
         if (!$aggs->isEmpty()) {
             $reverseNested = new ReverseNestedAggregation($name, $aggs);
             $this->aggregations->merge(AggregationCollection::fromAggregation($reverseNested));
         }
-        
+
         return $this;
     }
 

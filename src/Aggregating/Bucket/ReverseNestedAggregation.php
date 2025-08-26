@@ -9,7 +9,7 @@ use Webmozart\Assert\Assert;
 class ReverseNestedAggregation implements Aggregation
 {
     public function __construct(
-        private string $name, 
+        private string $name,
         private AggregationCollection $children
     ) {
         Assert::stringNotEmpty(trim($name));
