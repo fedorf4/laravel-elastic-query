@@ -2,8 +2,9 @@
 
 use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket;
-use Ensi\LaravelElasticQuery\Aggregating\BucketCollection;
+use Ensi\LaravelElasticQuery\Aggregating\Bucket\ReverseNestedAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
+use Ensi\LaravelElasticQuery\Aggregating\Metrics\CardinalityAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\MinMaxScoreAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\ScriptAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Metrics\TopHitsAggregation;
@@ -264,25 +265,41 @@ test('aggregation query by script', function () {
     );
 });
 
-test('reverse nested aggregation query', function () {
+test('reverse nested aggregation with specific data', function () {
     /** @var IntegrationTestCase $this */
 
     $results = ProductsIndex::aggregate()
+        ->where('active', true)
         ->nested('offers', function ($builder) {
-            $builder->terms('offer_prices', 'offers.price', 5)
-                ->reverseNested('root_stats', function ($reverseBuilder) {
-                    $reverseBuilder->cardinality('unique_products', 'product_id')
-                        ->count('total_products', 'product_id');
-                });
+            $reverseAggs = new AggregationCollection();
+            $reverseAggs->add(new CardinalityAggregation(
+                'product_id', 
+                'product_id'
+            ));            
+            $reverseNested = new ReverseNestedAggregation('product_info', $reverseAggs);
+            
+            $compositeAggs = new AggregationCollection();
+            $compositeAggs->add($reverseNested);
+            
+            $builder->terms('sellers', 'seller_id', 10, composite: $compositeAggs);
         })
         ->get();
 
-    $prices = $results->get('offer_prices');
+    $sellers = $results->get('sellers');
     
-    expect($prices)->toBeInstanceOf(BucketCollection::class);
+    $seller10Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 10);
+    expect($seller10Bucket)->not->toBeNull();
+    expect($seller10Bucket->getCompositeValue('product_id'))->toBe(3);
     
-    foreach ($prices as $bucket) {
-        expect($bucket->getCompositeValue('unique_products'))->toBeGreaterThan(0);
-        expect($bucket->getCompositeValue('total_products'))->toBeGreaterThan(0);
-    }
+    $seller15Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 15);
+    expect($seller15Bucket)->not->toBeNull();
+    expect($seller15Bucket->getCompositeValue('product_id'))->toBe(3);
+    
+    $seller20Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 20);
+    expect($seller20Bucket)->not->toBeNull();
+    expect($seller20Bucket->getCompositeValue('product_id'))->toBe(3);
+
+    $seller90Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 90);
+    expect($seller90Bucket)->not->toBeNull();
+    expect($seller90Bucket->getCompositeValue('product_id'))->toBe(1);
 });
