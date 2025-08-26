@@ -273,28 +273,28 @@ test('reverse nested aggregation with specific data', function () {
         ->nested('offers', function ($builder) {
             $reverseAggs = new AggregationCollection();
             $reverseAggs->add(new CardinalityAggregation(
-                'product_id', 
+                'product_id',
                 'product_id'
-            ));            
+            ));
             $reverseNested = new ReverseNestedAggregation('product_info', $reverseAggs);
-            
+
             $compositeAggs = new AggregationCollection();
             $compositeAggs->add($reverseNested);
-            
+
             $builder->terms('sellers', 'seller_id', 10, composite: $compositeAggs);
         })
         ->get();
 
     $sellers = $results->get('sellers');
-    
+
     $seller10Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 10);
     expect($seller10Bucket)->not->toBeNull();
     expect($seller10Bucket->getCompositeValue('product_id'))->toBe(3);
-    
+
     $seller15Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 15);
     expect($seller15Bucket)->not->toBeNull();
     expect($seller15Bucket->getCompositeValue('product_id'))->toBe(3);
-    
+
     $seller20Bucket = $sellers->first(fn (Bucket $bucket) => $bucket->key == 20);
     expect($seller20Bucket)->not->toBeNull();
     expect($seller20Bucket->getCompositeValue('product_id'))->toBe(3);

@@ -7,7 +7,6 @@ use Ensi\LaravelElasticQuery\Aggregating\AggregationCollection;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\FilterAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\FiltersAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\NestedAggregation;
-use Ensi\LaravelElasticQuery\Aggregating\Bucket\ReverseNestedAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\Bucket\TermsAggregation;
 use Ensi\LaravelElasticQuery\Aggregating\CompositeAggregationBuilder;
 use Ensi\LaravelElasticQuery\Aggregating\FiltersCollection;
